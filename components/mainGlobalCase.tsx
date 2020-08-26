@@ -4,18 +4,16 @@ import GlobalMap from './globalMap';
 
 const MainGlobalCase = ({ data, onHover, onClick }) => {
   return (
-    <section>
-      <div className="container">
-        <div
-          style={{
-            overflowY: 'hidden',
-            overflowX: 'auto',
-          }}
-        >
-          <GlobalMap projectionScale={200} data={data} onHover={onHover} onClick={onClick} />
-        </div>
+    <div className="container">
+      <div
+        style={{
+          overflowY: 'hidden',
+          overflowX: 'auto',
+        }}
+      >
+        <GlobalMap projectionScale={200} data={data} onHover={onHover} onClick={onClick} />
       </div>
-    </section>
+    </div>
   );
 };
 
