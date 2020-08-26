@@ -10,10 +10,10 @@ const d3 = require('d3-format');
 export default function Home() {
   const [countriesList, setCountriesList] = useState([]);
   const [selectCountry, setSelectCountry] = useState({
-    country: '',
-    cases: '',
-    death: '',
-    tests: '',
+    country: {},
+    cases: {},
+    death: {},
+    tests: {},
     population: '',
   });
 
@@ -71,14 +71,10 @@ export default function Home() {
                     name: statistic.country,
                     id: countryMap[statistic.country],
                     value: statistic.cases.total,
-                    cases: `${d3.format(',')(statistic.cases.total)}${
-                      statistic.cases.new ? `(+${d3.format(',')(statistic.cases.new)})` : ''
-                    }`,
-                    death: `${d3.format(',')(statistic.deaths.total)}${
-                      statistic.deaths.new ? `(+${d3.format(',')(statistic.deaths.new)})` : ''
-                    }`,
-                    tests: statistic.tests ? d3.format(',')(statistic.tests.total) : 'n/a',
-                    population: statistic.population ? d3.format(',')(statistic.population) : 'n/a',
+                    cases: statistic.cases,
+                    death: statistic.deaths,
+                    tests: statistic.tests,
+                    population: statistic.population,
                   }))
                 );
               })
@@ -95,7 +91,10 @@ export default function Home() {
     if (countriesList.length > 0) {
       const _us = countriesList.filter((c) => c.name === 'USA')[0];
       setSelectCountry({
-        country: _us.name,
+        country: {
+          name: _us.name,
+          id: _us.id,
+        },
         cases: _us.cases,
         death: _us.death,
         tests: _us.tests,
@@ -126,49 +125,54 @@ export default function Home() {
 
       <main>
         <MyHeader />
-        <hr />
-        <section>
-          <div className="container">
-            <nav className="level is-mobile">
+
+        {countriesList.length === 0 && (
+          <progress className="progress is-small is-warning" max="100">
+            15%
+          </progress>
+        )}
+        {countriesList.length > 0 && (
+          <div className="mt-5">
+            <nav className="level">
               <div className="level-item has-text-centered">
                 <div>
                   <p className="heading">Select Country</p>
-                  <p className="title">{selectCountry.country}</p>
+                  <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
                 </div>
               </div>
               <div className="level-item has-text-centered">
                 <div>
                   <p className="heading">Population</p>
-                  <p className="title">{selectCountry.population}</p>
+                  <h1 className="title is-spaced">{d3.format(',.2s')(selectCountry.population)}</h1>
                 </div>
               </div>
-            </nav>
-          </div>
-          <hr />
-          <div className="container">
-            <nav className="level is-mobile">
               <div className="level-item has-text-centered">
                 <div>
                   <p className="heading">Tests</p>
-                  <p className="title">{selectCountry.tests}</p>
+                  <h1 className="title is-spaced">{d3.format(',')(selectCountry.tests['total'])}</h1>
                 </div>
               </div>
               <div className="level-item has-text-centered">
                 <div>
                   <p className="heading">Cases</p>
-                  <p className="title">{selectCountry.cases}</p>
+                  <h1 className="title is-spaced">{d3.format(',')(selectCountry.cases['total'])}</h1>
+                  {selectCountry.cases['new'] && (
+                    <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.cases['new'])})`}</h2>
+                  )}
                 </div>
               </div>
               <div className="level-item has-text-centered">
                 <div>
                   <p className="heading">Death</p>
-                  <p className="title">{selectCountry.death}</p>
+                  <h1 className="title is-spaced">{d3.format(',')(selectCountry.death['total'])}</h1>
+                  {selectCountry.death['new'] && (
+                    <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.death['new'])})`}</h2>
+                  )}
                 </div>
               </div>
             </nav>
           </div>
-        </section>
-
+        )}
         <MainGlobalCase
           data={countriesList}
           onHover={function (e) {
@@ -182,7 +186,10 @@ export default function Home() {
             if (countriesList.length > 0) {
               console.log(e);
               setSelectCountry({
-                country: e.label,
+                country: {
+                  name: e.data.name,
+                  id: e.data.id,
+                },
                 cases: e.data.cases,
                 death: e.data.death,
                 tests: e.data.tests,
