@@ -4,6 +4,8 @@ import GlobalMap from '../components/globalMap';
 import MainGlobalCase from '../components/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
 
+const moment = require('moment');
+
 const axios = require('axios');
 const d3 = require('d3-format');
 
@@ -15,9 +17,15 @@ export default function Home() {
     death: {},
     tests: {},
     population: '',
+    time: null,
+    timediff: '',
   });
 
   const caseDisplayRef = useRef(null);
+
+  useEffect(() => {
+    console.log(selectCountry);
+  }, [selectCountry]);
 
   useEffect(() => {
     /*
@@ -85,6 +93,7 @@ export default function Home() {
                         death: statistic.deaths,
                         tests: statistic.tests,
                         population: statistic.population,
+                        time: statistic.time,
                       };
                     }
                     return {
@@ -105,12 +114,15 @@ export default function Home() {
   useEffect(() => {
     if (countriesList.length > 0) {
       const _us = countriesList.filter((c) => c.name === 'USA')[0];
+      const { country, cases, death, tests, population, time } = _us;
       setSelectCountry({
-        country: _us.country,
-        cases: _us.cases,
-        death: _us.death,
-        tests: _us.tests,
-        population: _us.population,
+        country,
+        cases,
+        death,
+        tests,
+        population,
+        time: moment(time).format('lll'),
+        timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
       });
     }
   }, [countriesList]);
@@ -142,6 +154,9 @@ export default function Home() {
         <div className="container">
           <h1 className="title">Covid 19 Statistics</h1>
           <h2 className="subtitle">A simple webpage display covid-19 latest statistics data</h2>
+          <h6 className="subtitle is-6">
+            <i>More features coming soon...</i>
+          </h6>
         </div>
       </div>
     </section>
@@ -196,6 +211,7 @@ export default function Home() {
                     <div>
                       <p className="heading">Select Country</p>
                       <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
+                      <h2 className="subtitle">{selectCountry.timediff}</h2>
                     </div>
                   </div>
                   <div className="level-item has-text-centered">
@@ -258,9 +274,7 @@ export default function Home() {
                       <div className="media-content">
                         <div className="content">
                           <p>
-                            <strong>{selectCountry.country['name']}</strong>{' '}
-                            <small>{selectCountry.country['code-3']}</small> <small>31m</small>
-                            <br />
+                            <strong>{selectCountry.country['name']}</strong> <small>{selectCountry.timediff}</small>
                           </p>
                           <div className="field is-grouped is-grouped-multiline">
                             <div className="control">
@@ -297,6 +311,7 @@ export default function Home() {
                               </div>
                             </div>
                           </div>
+                          {/* <small>{selectCountry.country['code-3']}</small>  */}
                         </div>
                       </div>
                     </article>
@@ -320,12 +335,15 @@ export default function Home() {
               if (countriesList.length > 0) {
                 // console.log(e);
                 if (e.data) {
+                  const { country, cases, death, tests, population, time } = e.data;
                   setSelectCountry({
-                    country: e.data.country,
-                    cases: e.data.cases,
-                    death: e.data.death,
-                    tests: e.data.tests,
-                    population: e.data.population,
+                    country,
+                    cases,
+                    death,
+                    tests,
+                    population,
+                    time: moment(time).format('lll'),
+                    timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
                   });
                 }
               }
@@ -334,7 +352,14 @@ export default function Home() {
         </section>
       </main>
 
-      <footer></footer>
+      <footer className="has-text-centered mb-2">
+        <p>
+          {'copyright @ 2020 - '}
+          <a href="//vince-amazing.com" target="_blank">
+            vincec
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
