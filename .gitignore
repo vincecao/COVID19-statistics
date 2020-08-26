@@ -32,4 +32,4 @@ yarn-error.log*
 # certificates
 /certificates
 
-.next.config.js
+.env

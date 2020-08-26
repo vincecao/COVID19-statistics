@@ -12,7 +12,8 @@ Tech Stack:
 # Deploy
 
 ```js
-/* Modify next.config.sample.js with your api-key and rename as next.config.js with following three environment
+
+/* Config env, add .env file with following three environment
  - API_KEY
  - COVID_API_HOST: covid-19-data.p.rapidapi.com
  - COVID_API_HOST2: covid-193.p.rapidapi.com
