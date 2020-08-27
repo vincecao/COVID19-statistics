@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import GlobalMap from './globalMap';
+import UsMap from './usMap';
 
-const MainGlobalCase = ({ data, onHover, onClick }) => {
-  const [pTranslationX, setPTranslationX] = useState(0.5);
-  const [pTranslationY, setPTranslationY] = useState(0.55);
-  const [pScale, setPScale] = useState(240);
+const MainUsCase = ({ data, onHover, onClick }) => {
+  const [pTranslationX, setPTranslationX] = useState(1.8);
+  const [pTranslationY, setPTranslationY] = useState(1.35);
+  const [pScale, setPScale] = useState(970);
 
   useEffect(() => {
     console.log(pScale);
@@ -28,7 +28,8 @@ const MainGlobalCase = ({ data, onHover, onClick }) => {
             overflowX: 'auto',
           }}
         >
-          <GlobalMap
+          <UsMap
+            projectionScale={500}
             data={data}
             onHover={onHover}
             onClick={onClick}
@@ -84,6 +85,6 @@ const MainGlobalCase = ({ data, onHover, onClick }) => {
   );
 };
 
-MainGlobalCase.propTypes = {};
+MainUsCase.propTypes = {};
 
-export default MainGlobalCase;
+export default MainUsCase;

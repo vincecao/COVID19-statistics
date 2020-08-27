@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import GlobalMap from '../components/globalMap';
 import MainGlobalCase from '../components/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
+import MainUsCase from '../components/mainUsCase';
+import { MyHeader } from '../components/nav/myHeader';
 
 const moment = require('moment');
 
@@ -135,6 +137,7 @@ export default function Home() {
   }, []);
 
   const [sticky, setSticky] = useState(false);
+
   const handleScroll = () => {
     let stickyContainer = document.getElementById('sticky-container');
     if (stickyContainer) {
@@ -148,218 +151,191 @@ export default function Home() {
     }
   };
 
-  const MyHeader = () => (
-    <section className="hero is-warning is-medium">
-      <div className="hero-body">
-        <div className="container">
-          <h1 className="title">Covid 19 Statistics</h1>
-          <h2 className="subtitle">A simple webpage display covid-19 latest statistics data</h2>
-          <h6 className="subtitle is-6">
-            <i>More features coming soon...</i>
-          </h6>
-        </div>
-      </div>
-    </section>
-  );
-
   return (
-    <div className="root">
-      <Head>
-        <title>COVID19 | Statistics</title>
-        {/* <link rel="icon" href="/favicon.ico" /> */}
-        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-      </Head>
-
-      <main>
-        <MyHeader />
-        <section id="sticky-container">
-          {countriesList.length === 0 && (
-            <>
-              <progress className="progress is-small is-warning" max="100">
+    <main>
+      <MyHeader />
+      <section id="sticky-container">
+        {countriesList.length === 0 && (
+          <>
+            <progress className="progress is-small is-warning" max="100">
+              15%
+            </progress>
+            {sticky && (
+              <progress
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  zIndex: 10,
+                }}
+                className="progress is-small is-warning"
+                max="100"
+              >
                 15%
               </progress>
-              {sticky && (
-                <progress
-                  style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    zIndex: 10,
-                  }}
-                  className="progress is-small is-warning"
-                  max="100"
-                >
-                  15%
-                </progress>
-              )}
-            </>
-          )}
-          {countriesList.length > 0 && (
-            <>
+            )}
+          </>
+        )}
+        {countriesList.length > 0 && (
+          <>
+            <div
+              className="mt-5 mb-5"
+              ref={caseDisplayRef}
+              onScroll={() => {
+                const { offsetTop } = caseDisplayRef.current;
+                console.log(offsetTop);
+              }}
+            >
+              <nav className="level">
+                <div className="level-item has-text-centered">
+                  <div>
+                    <p className="heading">Select Country</p>
+                    <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
+                    <h6 className="subtitle is-6">
+                      <i>{selectCountry.timediff}</i>
+                    </h6>
+                  </div>
+                </div>
+                <div className="level-item has-text-centered">
+                  <div>
+                    <p className="heading">Population</p>
+                    <h1 className="title is-spaced">{d3.format(',.2s')(selectCountry.population)}</h1>
+                  </div>
+                </div>
+                <div className="level-item has-text-centered">
+                  <div>
+                    <p className="heading">Tests</p>
+                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.tests['total'])}</h1>
+                  </div>
+                </div>
+                <div className="level-item has-text-centered">
+                  <div>
+                    <p className="heading">Cases</p>
+                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.cases['total'])}</h1>
+                    {selectCountry.cases['new'] && (
+                      <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.cases['new'])})`}</h2>
+                    )}
+                  </div>
+                </div>
+                <div className="level-item has-text-centered">
+                  <div>
+                    <p className="heading">Death</p>
+                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.death['total'])}</h1>
+                    {selectCountry.death['new'] && (
+                      <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.death['new'])})`}</h2>
+                    )}
+                  </div>
+                </div>
+              </nav>
+            </div>
+            {sticky && (
               <div
-                className="mt-5"
-                ref={caseDisplayRef}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  background: 'white',
+                  zIndex: 10,
+                }}
                 onScroll={() => {
                   const { offsetTop } = caseDisplayRef.current;
                   console.log(offsetTop);
                 }}
               >
-                <nav className="level">
-                  <div className="level-item has-text-centered">
-                    <div>
-                      <p className="heading">Select Country</p>
-                      <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
-                      <h2 className="subtitle">{selectCountry.timediff}</h2>
+                <div className="box">
+                  <article className="media">
+                    <div className="media-left">
+                      <figure className="image is-64x64">
+                        <img
+                          src={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
+                          alt="Image"
+                        />
+                      </figure>
                     </div>
-                  </div>
-                  <div className="level-item has-text-centered">
-                    <div>
-                      <p className="heading">Population</p>
-                      <h1 className="title is-spaced">{d3.format(',.2s')(selectCountry.population)}</h1>
-                    </div>
-                  </div>
-                  <div className="level-item has-text-centered">
-                    <div>
-                      <p className="heading">Tests</p>
-                      <h1 className="title is-spaced">{d3.format(',')(selectCountry.tests['total'])}</h1>
-                    </div>
-                  </div>
-                  <div className="level-item has-text-centered">
-                    <div>
-                      <p className="heading">Cases</p>
-                      <h1 className="title is-spaced">{d3.format(',')(selectCountry.cases['total'])}</h1>
-                      {selectCountry.cases['new'] && (
-                        <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.cases['new'])})`}</h2>
-                      )}
-                    </div>
-                  </div>
-                  <div className="level-item has-text-centered">
-                    <div>
-                      <p className="heading">Death</p>
-                      <h1 className="title is-spaced">{d3.format(',')(selectCountry.death['total'])}</h1>
-                      {selectCountry.death['new'] && (
-                        <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.death['new'])})`}</h2>
-                      )}
-                    </div>
-                  </div>
-                </nav>
-              </div>
-              {sticky && (
-                <div
-                  style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    background: 'white',
-                    zIndex: 10,
-                  }}
-                  onScroll={() => {
-                    const { offsetTop } = caseDisplayRef.current;
-                    console.log(offsetTop);
-                  }}
-                >
-                  <div className="box">
-                    <article className="media">
-                      <div className="media-left">
-                        <figure className="image is-64x64">
-                          <img
-                            src={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
-                            alt="Image"
-                          />
-                        </figure>
-                      </div>
-                      <div className="media-content">
-                        <div className="content">
-                          <p>
-                            <strong>{selectCountry.country['name']}</strong> <small>{selectCountry.timediff}</small>
-                          </p>
-                          <div className="field is-grouped is-grouped-multiline">
-                            <div className="control">
-                              <div className="tags has-addons">
-                                <span className="tag is-dark">Population</span>
-                                <span className="tag is-light">{d3.format(',.2s')(selectCountry.population)}</span>
-                              </div>
-                            </div>
-
-                            <div className="control">
-                              <div className="tags has-addons">
-                                <span className="tag is-dark">Tests</span>
-                                <span className="tag is-info">{d3.format(',')(selectCountry.tests['total'])}</span>
-                              </div>
-                            </div>
-
-                            <div className="control">
-                              <div className="tags has-addons">
-                                <span className="tag is-dark">Cases</span>
-                                <span className="tag is-warning">
-                                  {d3.format(',')(selectCountry.cases['total'])}
-                                  {selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="control">
-                              <div className="tags has-addons">
-                                <span className="tag is-dark">Death</span>
-                                <span className="tag is-danger">
-                                  {d3.format(',')(selectCountry.death['total'])}
-                                  {selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}
-                                </span>
-                              </div>
+                    <div className="media-content">
+                      <div className="content">
+                        <p>
+                          <strong>{selectCountry.country['name']}</strong> <small>{selectCountry.timediff}</small>
+                        </p>
+                        <div className="field is-grouped is-grouped-multiline">
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-dark">Population</span>
+                              <span className="tag is-light">{d3.format(',.2s')(selectCountry.population)}</span>
                             </div>
                           </div>
-                          {/* <small>{selectCountry.country['code-3']}</small>  */}
-                        </div>
-                      </div>
-                    </article>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-        <section>
-          <MainGlobalCase
-            data={countriesList}
-            onHover={function (e) {
-              let myTooltip = document.createElement('div');
-              // myTooltip.id = 'myToolTip';
-              // myTooltip.innerHTML = '<h1>Hello, world</h1>';
-              // return myTooltip;
-              return null;
-            }}
-            onClick={(e) => {
-              if (countriesList.length > 0) {
-                // console.log(e);
-                if (e.data) {
-                  const { country, cases, death, tests, population, time } = e.data;
-                  setSelectCountry({
-                    country,
-                    cases,
-                    death,
-                    tests,
-                    population,
-                    time: moment(time).format('lll'),
-                    timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-                  });
-                }
-              }
-            }}
-          />
-        </section>
-      </main>
 
-      <footer className="has-text-centered mb-2">
-        <p>
-          {'copyright @ 2020 - '}
-          <a href="//vince-amazing.com" target="_blank">
-            vincec
-          </a>
-        </p>
-      </footer>
-    </div>
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-dark">Tests</span>
+                              <span className="tag is-info">{d3.format(',')(selectCountry.tests['total'])}</span>
+                            </div>
+                          </div>
+
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-dark">Cases</span>
+                              <span className="tag is-warning">
+                                {d3.format(',')(selectCountry.cases['total'])}
+                                {selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-dark">Death</span>
+                              <span className="tag is-danger">
+                                {d3.format(',')(selectCountry.death['total'])}
+                                {selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* <small>{selectCountry.country['code-3']}</small>  */}
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+      <section>
+        <MainGlobalCase
+          data={countriesList}
+          onHover={function (e) {
+            let myTooltip = document.createElement('div');
+            // myTooltip.id = 'myToolTip';
+            // myTooltip.innerHTML = '<h1>Hello, world</h1>';
+            // return myTooltip;
+            return null;
+          }}
+          onClick={(e) => {
+            if (countriesList.length > 0) {
+              // console.log(e);
+              if (e.data) {
+                const { country, cases, death, tests, population, time } = e.data;
+                setSelectCountry({
+                  country,
+                  cases,
+                  death,
+                  tests,
+                  population,
+                  time: moment(time).format('lll'),
+                  timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
+                });
+              }
+            }
+          }}
+        />
+      </section>
+      {/* <section>
+          <MainUsCase data={[]} onClick={() => {}} onHover={() => {}} scale={1070} yValue={1.9} xValue={1.25} />
+        </section> */}
+    </main>
   );
 }
