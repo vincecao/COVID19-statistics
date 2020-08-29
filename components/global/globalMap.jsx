@@ -2,41 +2,44 @@ import React from 'react';
 import { ResponsiveChoropleth } from '@nivo/geo';
 import PropTypes from 'prop-types';
 
-const usCase = require('../data/usCase.json');
-const us_states = require('../data/us_states.json');
+const globalCase = require('../../data/globalCase.json');
+const world_countries = require('../../data/world_countries.json');
 
-const UsMap = ({
-  projectionScale = 125,
+const GlobalMap = ({
+  pScale,
   data = globalCase,
   onHover = () => {},
   onClick = () => {},
   pTranslationX,
   pTranslationY,
-  pScale,
 }) => {
   return (
     <div
       style={{
-        height: 900,
+        height: 1000,
         width: 1300,
         cursor: 'pointer',
       }}
     >
       <ResponsiveChoropleth
-        data={usCase}
-        features={us_states.features}
+        data={data}
+        features={world_countries.features}
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        colors="blues"
-        domain={[0, 1000000]}
-        unknownColor="#AAAEB0"
+        colors="PuBu"
+        domain={[0, 200000]}
+        unknownColor="#666666"
         label="properties.name"
-        valueFormat=".2s"
-        projectionScale={pScale}
+        valueFormat=","
         projectionTranslation={[pTranslationX, pTranslationY]}
         projectionRotation={[0, 0, 0]}
+        projectionScale={pScale}
+        enableGraticule={false}
+        fill
         graticuleLineColor="#dddddd"
-        borderWidth={0.5}
+        borderWidth={0.2}
         borderColor="#152538"
+        //tooltip={onHover}
+        onClick={onClick}
         /*legends={[
           {
             anchor: 'top-left',
@@ -67,6 +70,6 @@ const UsMap = ({
   );
 };
 
-UsMap.propTypes = {};
+GlobalMap.propTypes = {};
 
-export default UsMap;
+export default GlobalMap;

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import GlobalMap from '../components/globalMap';
-import MainGlobalCase from '../components/mainGlobalCase';
+import GlobalMap from '../components/global/globalMap';
+import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
-import MainUsCase from '../components/mainUsCase';
+import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
 import { HtmlHeader } from '../components/basic/htmlHeader';
 

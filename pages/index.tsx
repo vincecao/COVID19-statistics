@@ -1,15 +1,17 @@
 import Head from 'next/head';
 import { useState, useEffect, useRef } from 'react';
-import GlobalMap from '../components/globalMap';
-import MainGlobalCase from '../components/mainGlobalCase';
+import GlobalMap from '../components/global/globalMap';
+import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
-import MainUsCase from '../components/mainUsCase';
+import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
 
 const moment = require('moment');
 
 const axios = require('axios');
 const d3 = require('d3-format');
+
+const COUNTRY_LIST = require('../data/country_list.json');
 
 export default function Home() {
   const [countriesList, setCountriesList] = useState([]);
@@ -39,21 +41,23 @@ export default function Home() {
         "longitude": 67.709953
     }
     */
-    axios
-      .get(`https://${__api_host__}/help/countries`, {
-        headers: {
-          'content-type': 'application/octet-stream',
-          'x-rapidapi-host': __api_host__,
-          'x-rapidapi-key': __api_key__,
-          useQueryString: true,
-        },
-        params: {
-          format: 'json',
-        },
-      })
-      .then((response) => {
+    // axios
+    //   .get(`https://${__api_host__}/help/countries`, {
+    //     headers: {
+    //       'content-type': 'application/octet-stream',
+    //       'x-rapidapi-host': __api_host__,
+    //       'x-rapidapi-key': __api_key__,
+    //       useQueryString: true,
+    //     },
+    //     params: {
+    //       format: 'json',
+    //     },
+    //   })
+    Promise.resolve()
+      .then(() => {
         let countryMap = {};
-        response.data.map((country) => {
+        // response.data.map((country) => {
+        COUNTRY_LIST.map((country) => {
           countryMap = {
             ...countryMap,
             [country.name]: {
