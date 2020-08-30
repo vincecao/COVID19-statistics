@@ -1,23 +1,32 @@
 # COVID19-statistics
 
-Tech Stack:
+#### Desktop
 
-* [next.js](https://nextjs.org/)
-* Typescript
-* [react-query](https://react-query.tanstack.com/)
-* [bulma](https://bulma.io/)
-* [nivo](https://nivo.rocks/)
-* [rapidapi](https://rapidapi.com/)
-* [vercel](vercel.com)
+![](./screenshots/global.png)
+![](./screenshots/domastic.png)
 
-# Deploy
+#### Mobile
 
-``` js
+![](./screenshots/mobile.jpg)
+
+## Stack:
+
+- [next.js](https://nextjs.org/)
+- Typescript
+- [react-query](https://react-query.tanstack.com/)
+- [bulma](https://bulma.io/)
+- [nivo](https://nivo.rocks/)
+- [rapidapi](https://rapidapi.com/)
+- [vercel](vercel.com)
+
+## Deploy
+
+```js
 /* Config env, add .env file with following three environment
  - API_KEY
  - COVID_API_HOST: covid-19-data.p.rapidapi.com
  - COVID_API_HOST2: covid-193.p.rapidapi.com
- - COVID_API_HOST2: covid-19-statistics.p.rapidapi.com
+ - COVID_API_HOST3: covid-19-statistics.p.rapidapi.com
 */
 
 yarn install
@@ -27,6 +36,7 @@ yarn install
 yarn dev
 ```
 
-# Feature
+## Features
 
-* Always sync with latest covid19 statistic
+- Always syncing with latest covid19 statistic
+- Global and US domastic wide
