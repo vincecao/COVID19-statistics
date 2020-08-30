@@ -1,58 +1,159 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, queryCache } from 'react-query';
 import GlobalMap from '../components/global/globalMap';
 import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
 import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
 import { HtmlHeader } from '../components/basic/htmlHeader';
+import { stat } from 'fs';
+import { getState, convertRegion } from '../components/helperLib/help';
+import { StatisticDomasticCardDisplay } from '../components/statisticDisplay/StatisticDomasticCardDisplay';
+import { StatisticDomasticLevelDisplay } from '../components/statisticDisplay/StatisticDomasticLevelDisplay';
+import Loading from '../components/basic/Loading';
+
+const TO_NAME = 1;
+const TO_ABBREVIATED = 2;
 
 const moment = require('moment');
 
 const axios = require('axios');
 const d3 = require('d3-format');
 
+const iso_countries = require('i18n-iso-countries');
+iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
+
 export default function Uscase() {
   const [stateList, setStateList] = useState([]);
-  const [provinceList, setProvinceList] = useState([]);
   const [selectState, setSelectState] = useState({
-    country: {},
+    state: {
+      name: '',
+      code: '',
+    },
     cases: {},
     death: {},
-    tests: {},
-    population: '',
+    active: {},
+    recovered: {},
+    fatalityRate: 0,
+    cities: [],
     time: null,
     timediff: '',
   });
 
+  const [currentGuestLocaltion, setCurrentGuestLocation] = useState({
+    city: 'San Francisco',
+    state: convertRegion('CA', TO_NAME),
+  });
+
   const caseDisplayRef = useRef(null);
 
-  useEffect(() => {
-    console.log(selectState);
-  }, [selectState]);
+  const getTimeDiff = (time) => {
+    // return moment().diff(moment(time), 'seconds').asMilliseconds().format('hh:mm:ss');
+    var a = moment();
+    var b = moment(time);
+    var diff_s = a.diff(b, 'seconds');
+    return moment.utc(moment.duration(diff_s, 'seconds').asMilliseconds()).format('hh:mm:ss');
+  };
 
   // useEffect(() => {
-  //   axios({
-  //     method: 'GET',
-  //     url: `https://${__api_host3__}/provinces`,
-  //     headers: {
-  //       'content-type': 'application/octet-stream',
-  //       'x-rapidapi-host': __api_host3__,
-  //       'x-rapidapi-key': __api_key__,
-  //       useQueryString: true,
-  //     },
-  //     params: {
-  //       iso: 'USA',
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log(response);
-  //       setStateList(response.data.filter((data) => data.province.indexOf(',') === -1))
-  //       setProvinceList(response.data.filter((data) => data.province.indexOf(',') !== -1))
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, []);
+  //   console.log(selectState);
+  // }, [selectState]);
+
+  // useEffect(() => {
+  //   console.log(stateList);
+  // }, [stateList]);
+
+  // useEffect(() => {
+  //   console.log(currentGuestLocaltion);
+  // }, [currentGuestLocaltion]);
+
+  // get localGeustLocation
+  useEffect(() => {
+    axios
+      .get('https://www.iplocate.io/api/lookup/')
+      .then((response) =>
+        setCurrentGuestLocation({
+          ...response.data,
+          country_code: iso_countries.alpha2ToAlpha3(response.data.country_code),
+          state: convertRegion(getState(response.data.postal_code), TO_NAME),
+        })
+      )
+      .catch(console.error);
+  }, []);
+
+  const getDomasticStatistic = () => {
+    return axios
+      .get(`https://${__api_host3__}/reports`, {
+        headers: {
+          'content-type': 'application/octet-stream',
+          'x-rapidapi-host': __api_host3__,
+          'x-rapidapi-key': __api_key__,
+          useQueryString: true,
+        },
+        params: {
+          iso: 'USA',
+          region_name: 'US',
+          // city_name: 'Autauga',
+          // date: '2020-04-16',
+          // q: 'US Alabama',
+        },
+      })
+      .then((response: { data: { data: [] } }) => {
+        return response.data.data.map((stateData: any) => ({
+          id: stateData.region.province,
+          value: stateData.confirmed,
+          state: {
+            name: stateData.region.province,
+            code: convertRegion(stateData.region.province, TO_ABBREVIATED),
+          },
+          cases: {
+            total: stateData.confirmed,
+            new: stateData.confirmed_diff,
+          },
+          death: {
+            total: stateData.deaths,
+            new: stateData.deaths_diff,
+          },
+          active: {
+            total: stateData.active,
+            new: stateData.active_diff,
+          },
+          recovered: {
+            total: stateData.recovered,
+            new: stateData.recovered_diff,
+          },
+          fatalityRate: stateData.fatality_rate,
+          cities: stateData.cities,
+          time: moment.utc(stateData.last_update).toDate(), //utc to local， moment(time).local().format('YYYY-MM-DD HH:mm:ss')
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // react-query Queries
+  const domasticQuery = useQuery('domastic', getDomasticStatistic, {
+    onSuccess: (data: []) => {
+      setStateList(data);
+      if (data.length > 0) {
+        updateSelect(
+          data.filter(
+            (s: { id: string }) =>
+              s.id === (selectState.state.name ? selectState.state.name : currentGuestLocaltion.state)
+          )[0]
+        );
+      }
+    },
+  });
+
+  // react-query Mutations
+  const [refreshDomastic] = useMutation(getDomasticStatistic, {
+    onSuccess: () => {
+      // Query Invalidations
+      queryCache.invalidateQueries('domastic');
+    },
+  });
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -76,17 +177,51 @@ export default function Uscase() {
     }
   };
 
+  const handleMainDomasticCaseClick = (e) => {
+    if (stateList.length > 0) {
+      // console.log(e);
+      if (e.data) {
+        updateSelect(e.data);
+      }
+    }
+  };
+
+  const updateSelect = (select) => {
+    const { state, cases, death, active, recovered, fatalityRate, cities, time } = select;
+    setSelectState({
+      state,
+      cases,
+      death,
+      active,
+      recovered,
+      fatalityRate,
+      cities,
+      time: moment(time).format('lll'),
+      timediff: `Updated ${getTimeDiff(time)} ago`,
+    });
+  };
+
+  const handleMainDomasticCaseHover = (e) => {
+    let myTooltip = document.createElement('div');
+    // myTooltip.id = 'myToolTip';
+    // myTooltip.innerHTML = '<h1>Hello, world</h1>';
+    // return myTooltip;
+    return null;
+  };
+
+  const handleRefreshButtonClick = () => {
+    refreshDomastic();
+  };
+
   return (
     <main>
       <MyHeader />
       <section id="sticky-container">
         {stateList.length === 0 && (
           <>
-            <progress className="progress is-small is-warning" max="100">
-              15%
-            </progress>
+            <Loading />
             {sticky && (
-              <progress
+              <Loading
                 style={{
                   position: 'fixed',
                   top: 0,
@@ -94,65 +229,26 @@ export default function Uscase() {
                   width: '100%',
                   zIndex: 10,
                 }}
-                className="progress is-small is-warning"
-                max="100"
-              >
-                15%
-              </progress>
+              />
             )}
           </>
         )}
         {stateList.length > 0 && (
           <>
             <div
-              className="mt-5 mb-5"
+              className="container mt-5 mb-5"
               ref={caseDisplayRef}
               onScroll={() => {
                 const { offsetTop } = caseDisplayRef.current;
                 console.log(offsetTop);
               }}
             >
-              <nav className="level">
+              <StatisticDomasticLevelDisplay selectState={selectState} />
+              <div className="level mt-3">
                 <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Select Country</p>
-                    <h1 className="title is-spaced">{selectState.country['name']}</h1>
-                    <h2 className="subtitle is-6">
-                      <i>{selectState.timediff}</i>
-                    </h2>
-                  </div>
+                  <p className="heading">Source: Johns Hopkins CSSE</p>
                 </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Population</p>
-                    <h1 className="title is-spaced">{d3.format(',.2s')(selectState.population)}</h1>
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Tests</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectState.tests['total'])}</h1>
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Cases</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectState.cases['total'])}</h1>
-                    {selectState.cases['new'] && (
-                      <h2 className="subtitle">{`(+${d3.format(',')(selectState.cases['new'])})`}</h2>
-                    )}
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Death</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectState.death['total'])}</h1>
-                    {selectState.death['new'] && (
-                      <h2 className="subtitle">{`(+${d3.format(',')(selectState.death['new'])})`}</h2>
-                    )}
-                  </div>
-                </div>
-              </nav>
+              </div>
             </div>
             {sticky && (
               <div
@@ -169,102 +265,14 @@ export default function Uscase() {
                   console.log(offsetTop);
                 }}
               >
-                <div className="box">
-                  <article className="media">
-                    <div className="media-left">
-                      <figure className="image is-64x64">
-                        <img
-                          src={`https://www.countryflags.io/${selectState.country['code-2']}/shiny/64.png`}
-                          alt="Image"
-                        />
-                      </figure>
-                    </div>
-                    <div className="media-content">
-                      <div className="content">
-                        <p>
-                          <strong>{selectState.country['name']}</strong> <small>{selectState.timediff}</small>
-                        </p>
-                        <div className="field is-grouped is-grouped-multiline">
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Population</span>
-                              <span className="tag is-light">{d3.format(',.2s')(selectState.population)}</span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Tests</span>
-                              <span className="tag is-info">{d3.format(',')(selectState.tests['total'])}</span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Cases</span>
-                              <span className="tag is-warning">
-                                {d3.format(',')(selectState.cases['total'])}
-                                {selectState.cases['new'] ? `(+${d3.format(',')(selectState.cases['new'])})` : ''}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Death</span>
-                              <span className="tag is-danger">
-                                {d3.format(',')(selectState.death['total'])}
-                                {selectState.death['new'] ? `(+${d3.format(',')(selectState.death['new'])})` : ''}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        {/* <small>{selectCountry.country['code-3']}</small>  */}
-                      </div>
-                    </div>
-                  </article>
-                </div>
+                <StatisticDomasticCardDisplay selectState={selectState} />
               </div>
             )}
           </>
         )}
       </section>
-      <div className="level mt-3">
-        <div className="level-item has-text-centered">
-          <p className="heading">Developing...</p>
-        </div>
-      </div>
-      {/* <section>
-          <MainGlobalCase
-            data={countriesList}
-            onHover={function (e) {
-              let myTooltip = document.createElement('div');
-              // myTooltip.id = 'myToolTip';
-              // myTooltip.innerHTML = '<h1>Hello, world</h1>';
-              // return myTooltip;
-              return null;
-            }}
-            onClick={(e) => {
-              if (countriesList.length > 0) {
-                // console.log(e);
-                if (e.data) {
-                  const { country, cases, death, tests, population, time } = e.data;
-                  setSelectCountry({
-                    country,
-                    cases,
-                    death,
-                    tests,
-                    population,
-                    time: moment(time).format('lll'),
-                    timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-                  });
-                }
-              }
-            }}
-          />
-        </section> */}
-      <section style={{ opacity: 0.6 }}>
-        <MainUsCase data={[]} onClick={() => {}} onHover={() => {}} />
+      <section>
+        <MainUsCase data={stateList} onHover={handleMainDomasticCaseHover} onClick={handleMainDomasticCaseClick} />
       </section>
     </main>
   );

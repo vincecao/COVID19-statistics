@@ -7,7 +7,7 @@ const us_states = require('../../data/us_states.json');
 
 const UsMap = ({
   projectionScale = 125,
-  data = globalCase,
+  data = usCase,
   onHover = () => {},
   onClick = () => {},
   pTranslationX,
@@ -23,11 +23,11 @@ const UsMap = ({
       }}
     >
       <ResponsiveChoropleth
-        data={usCase}
+        data={data}
         features={us_states.features}
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        colors="blues"
-        domain={[0, 1000000]}
+        colors="OrRd"
+        domain={[0, 500000]}
         unknownColor="#AAAEB0"
         label="properties.name"
         valueFormat=".2s"
@@ -37,6 +37,7 @@ const UsMap = ({
         graticuleLineColor="#dddddd"
         borderWidth={0.5}
         borderColor="#152538"
+        onClick={onClick}
         /*legends={[
           {
             anchor: 'top-left',

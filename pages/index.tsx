@@ -6,8 +6,9 @@ import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
 import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
-import { StatisticCardDisplay } from '../components/statisticDisplay/StatisticCardDisplay';
-import { StatisticLevelDisplay } from '../components/statisticDisplay/StatisticLevelDisplay';
+import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
+import { StatisticGlobalLevelDisplay } from '../components/statisticDisplay/StatisticGlobalLevelDisplay';
+import Loading from '../components/basic/Loading';
 
 const moment = require('moment');
 
@@ -170,21 +171,13 @@ export default function Home() {
     onSuccess: (data: []) => {
       setCountriesList(data);
       if (data.length > 0) {
-        const new_country = data.filter(
-          (c: { id: string }) =>
-            c.id ===
-            (selectCountry.country['code-3'] ? selectCountry.country['code-3'] : currentGuestLocaltion.country_code)
-        )[0];
-        const { country, cases, death, tests, population, time } = new_country;
-        setSelectCountry({
-          country,
-          cases,
-          death,
-          tests,
-          population,
-          time: moment(time).format('lll'),
-          timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-        });
+        updateSelect(
+          data.filter(
+            (c: { id: string }) =>
+              c.id ===
+              (selectCountry.country['code-3'] ? selectCountry.country['code-3'] : currentGuestLocaltion.country_code)
+          )[0]
+        );
       }
     },
   });
@@ -220,22 +213,30 @@ export default function Home() {
     }
   };
 
+  const getTimeDiff = (time) => {
+    return moment().diff(moment(time), 'minutes');
+  };
+
   const handleMainGlobalCaseClick = (e) => {
     if (countriesList.length > 0) {
       // console.log(e);
       if (e.data) {
-        const { country, cases, death, tests, population, time } = e.data;
-        setSelectCountry({
-          country,
-          cases,
-          death,
-          tests,
-          population,
-          time: moment(time).format('lll'),
-          timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-        });
+        updateSelect(e.data);
       }
     }
+  };
+
+  const updateSelect = (select) => {
+    const { country, cases, death, tests, population, time } = select;
+    setSelectCountry({
+      country,
+      cases,
+      death,
+      tests,
+      population,
+      time: moment(time).format('lll'),
+      timediff: `Updated ${getTimeDiff(time)} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
+    });
   };
 
   const handleMainGlobalCaseHover = (e) => {
@@ -256,11 +257,9 @@ export default function Home() {
       <section id="sticky-container">
         {globalQuery.status === 'loading' && (
           <>
-            <progress className="progress is-small is-warning" max="100">
-              15%
-            </progress>
+            <Loading />
             {sticky && (
-              <progress
+              <Loading
                 style={{
                   position: 'fixed',
                   top: 0,
@@ -268,11 +267,7 @@ export default function Home() {
                   width: '100%',
                   zIndex: 10,
                 }}
-                className="progress is-small is-warning"
-                max="100"
-              >
-                15%
-              </progress>
+              />
             )}
           </>
         )}
@@ -286,7 +281,7 @@ export default function Home() {
                 console.log({ caseDisplayRef: offsetTop });
               }}
             >
-              <StatisticLevelDisplay selectCountry={selectCountry} />
+              <StatisticGlobalLevelDisplay selectCountry={selectCountry} />
               {/* <button className="button is-warning" onClick={handleRefreshButtonClick}>
                 Refresh
               </button> */}
@@ -302,7 +297,7 @@ export default function Home() {
                   zIndex: 10,
                 }}
               >
-                <StatisticCardDisplay
+                <StatisticGlobalCardDisplay
                   selectCountry={selectCountry}
                   onRefresh={handleRefreshButtonClick}
                   syncing={globalQuery.status === 'loading'}
