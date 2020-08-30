@@ -2,10 +2,12 @@
 
 Tech Stack:
 
+* [next.js](https://nextjs.org/)
 * Typescript
+* [react-query](https://react-query.tanstack.com/)
 * [bulma](https://bulma.io/)
-* [rapidapi](https://rapidapi.com/)
 * [nivo](https://nivo.rocks/)
+* [rapidapi](https://rapidapi.com/)
 * [vercel](vercel.com)
 
 # Deploy
@@ -24,3 +26,7 @@ yarn install
 
 yarn dev
 ```
+
+# Feature
+
+* Always sync with latest covid19 statistic

@@ -1,6 +1,7 @@
 import 'bulma/css/bulma.css';
 import { HtmlHeader } from '../components/basic/htmlHeader';
 import { MyFooter } from '../components/footer/myFooter';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -8,6 +9,7 @@ export default function MyApp({ Component, pageProps }) {
       <HtmlHeader />
       <Component {...pageProps} />
       <MyFooter />
+      <ReactQueryDevtools initialIsOpen />
     </>
   );
 }

@@ -1,22 +1,45 @@
 import Head from 'next/head';
 import { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, queryCache } from 'react-query';
 import GlobalMap from '../components/global/globalMap';
 import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
 import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
+import { StatisticCardDisplay } from '../components/statisticDisplay/StatisticCardDisplay';
+import { StatisticLevelDisplay } from '../components/statisticDisplay/StatisticLevelDisplay';
 
 const moment = require('moment');
 
 const axios = require('axios');
-const d3 = require('d3-format');
 
 const COUNTRY_LIST = require('../data/country_list.json');
+
+const iso_countries = require('i18n-iso-countries');
+iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
+
+interface countriesListType {
+  country: {
+    name: string;
+    'code-3': string;
+    'code-2': string;
+  };
+  cases: {};
+  death: {};
+  tests: {};
+  population: string;
+  time: any;
+  timediff: string;
+}
 
 export default function Home() {
   const [countriesList, setCountriesList] = useState([]);
   const [selectCountry, setSelectCountry] = useState({
-    country: {},
+    country: {
+      name: '',
+      'code-3': '',
+      'code-2': '',
+    },
     cases: {},
     death: {},
     tests: {},
@@ -24,14 +47,36 @@ export default function Home() {
     time: null,
     timediff: '',
   });
+  const [currentGuestLocaltion, setCurrentGuestLocation] = useState({
+    country_code: 'USA',
+    city: '',
+  });
+  // const [syncing, setSyncing] = useState(false);
 
   const caseDisplayRef = useRef(null);
 
-  useEffect(() => {
-    console.log(selectCountry);
-  }, [selectCountry]);
+  // useEffect(() => {
+  //   console.log({ currentGuestLocaltion });
+  // }, [currentGuestLocaltion]);
 
+  // useEffect(() => {
+  //   console.log({ selectCountry });
+  // }, [selectCountry]);
+
+  // get localGeustLocation
   useEffect(() => {
+    axios
+      .get('https://www.iplocate.io/api/lookup/')
+      .then((response) =>
+        setCurrentGuestLocation({
+          ...response.data,
+          country_code: iso_countries.alpha2ToAlpha3(response.data.country_code),
+        })
+      )
+      .catch(console.error);
+  }, []);
+
+  const getGlobalStatistic = () => {
     /*
       {
         "name": "Afghanistan",
@@ -53,7 +98,7 @@ export default function Home() {
     //       format: 'json',
     //     },
     //   })
-    Promise.resolve()
+    return Promise.resolve()
       .then(() => {
         let countryMap = {};
         // response.data.map((country) => {
@@ -111,28 +156,48 @@ export default function Home() {
               .catch(reject)
           )
       )
-      .then(setCountriesList)
+      .then((data: []) => {
+        setCountriesList(data);
+        return data;
+      })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
 
-  useEffect(() => {
-    if (countriesList.length > 0) {
-      const _us = countriesList.filter((c) => c.name === 'USA')[0];
-      const { country, cases, death, tests, population, time } = _us;
-      setSelectCountry({
-        country,
-        cases,
-        death,
-        tests,
-        population,
-        time: moment(time).format('lll'),
-        timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-      });
-    }
-  }, [countriesList]);
+  // react-query Queries
+  const globalQuery = useQuery('global', getGlobalStatistic, {
+    onSuccess: (data: []) => {
+      setCountriesList(data);
+      if (data.length > 0) {
+        const new_country = data.filter(
+          (c: { id: string }) =>
+            c.id ===
+            (selectCountry.country['code-3'] ? selectCountry.country['code-3'] : currentGuestLocaltion.country_code)
+        )[0];
+        const { country, cases, death, tests, population, time } = new_country;
+        setSelectCountry({
+          country,
+          cases,
+          death,
+          tests,
+          population,
+          time: moment(time).format('lll'),
+          timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
+        });
+      }
+    },
+  });
 
+  // react-query Mutations
+  const [refreshGlobal] = useMutation(getGlobalStatistic, {
+    onSuccess: () => {
+      // Query Invalidations
+      queryCache.invalidateQueries('global');
+    },
+  });
+
+  // scroll events
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -155,11 +220,41 @@ export default function Home() {
     }
   };
 
+  const handleMainGlobalCaseClick = (e) => {
+    if (countriesList.length > 0) {
+      // console.log(e);
+      if (e.data) {
+        const { country, cases, death, tests, population, time } = e.data;
+        setSelectCountry({
+          country,
+          cases,
+          death,
+          tests,
+          population,
+          time: moment(time).format('lll'),
+          timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
+        });
+      }
+    }
+  };
+
+  const handleMainGlobalCaseHover = (e) => {
+    let myTooltip = document.createElement('div');
+    // myTooltip.id = 'myToolTip';
+    // myTooltip.innerHTML = '<h1>Hello, world</h1>';
+    // return myTooltip;
+    return null;
+  };
+
+  const handleRefreshButtonClick = () => {
+    refreshGlobal();
+  };
+
   return (
     <main>
       <MyHeader />
       <section id="sticky-container">
-        {countriesList.length === 0 && (
+        {globalQuery.status === 'loading' && (
           <>
             <progress className="progress is-small is-warning" max="100">
               15%
@@ -184,54 +279,17 @@ export default function Home() {
         {countriesList.length > 0 && (
           <>
             <div
-              className="mt-5 mb-5"
+              className="mt-5 mb-5 container"
               ref={caseDisplayRef}
               onScroll={() => {
                 const { offsetTop } = caseDisplayRef.current;
-                console.log(offsetTop);
+                console.log({ caseDisplayRef: offsetTop });
               }}
             >
-              <nav className="level">
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Select Country</p>
-                    <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
-                    <h6 className="subtitle is-6">
-                      <i>{selectCountry.timediff}</i>
-                    </h6>
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Population</p>
-                    <h1 className="title is-spaced">{d3.format(',.2s')(selectCountry.population)}</h1>
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Tests</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.tests['total'])}</h1>
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Cases</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.cases['total'])}</h1>
-                    {selectCountry.cases['new'] && (
-                      <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.cases['new'])})`}</h2>
-                    )}
-                  </div>
-                </div>
-                <div className="level-item has-text-centered">
-                  <div>
-                    <p className="heading">Death</p>
-                    <h1 className="title is-spaced">{d3.format(',')(selectCountry.death['total'])}</h1>
-                    {selectCountry.death['new'] && (
-                      <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.death['new'])})`}</h2>
-                    )}
-                  </div>
-                </div>
-              </nav>
+              <StatisticLevelDisplay selectCountry={selectCountry} />
+              {/* <button className="button is-warning" onClick={handleRefreshButtonClick}>
+                Refresh
+              </button> */}
             </div>
             {sticky && (
               <div
@@ -243,100 +301,25 @@ export default function Home() {
                   background: 'white',
                   zIndex: 10,
                 }}
-                onScroll={() => {
-                  const { offsetTop } = caseDisplayRef.current;
-                  console.log(offsetTop);
-                }}
               >
-                <div className="box">
-                  <article className="media">
-                    <div className="media-left">
-                      <figure className="image is-64x64">
-                        <img
-                          src={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
-                          alt="Image"
-                        />
-                      </figure>
-                    </div>
-                    <div className="media-content">
-                      <div className="content">
-                        <p>
-                          <strong>{selectCountry.country['name']}</strong> <small>{selectCountry.timediff}</small>
-                        </p>
-                        <div className="field is-grouped is-grouped-multiline">
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Population</span>
-                              <span className="tag is-light">{d3.format(',.2s')(selectCountry.population)}</span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Tests</span>
-                              <span className="tag is-info">{d3.format(',')(selectCountry.tests['total'])}</span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Cases</span>
-                              <span className="tag is-warning">
-                                {d3.format(',')(selectCountry.cases['total'])}
-                                {selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-dark">Death</span>
-                              <span className="tag is-danger">
-                                {d3.format(',')(selectCountry.death['total'])}
-                                {selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        {/* <small>{selectCountry.country['code-3']}</small>  */}
-                      </div>
-                    </div>
-                  </article>
-                </div>
+                <StatisticCardDisplay
+                  selectCountry={selectCountry}
+                  onRefresh={handleRefreshButtonClick}
+                  syncing={globalQuery.status === 'loading'}
+                />
               </div>
             )}
           </>
         )}
       </section>
       <section>
-        <MainGlobalCase
-          data={countriesList}
-          onHover={function (e) {
-            let myTooltip = document.createElement('div');
-            // myTooltip.id = 'myToolTip';
-            // myTooltip.innerHTML = '<h1>Hello, world</h1>';
-            // return myTooltip;
-            return null;
-          }}
-          onClick={(e) => {
-            if (countriesList.length > 0) {
-              // console.log(e);
-              if (e.data) {
-                const { country, cases, death, tests, population, time } = e.data;
-                setSelectCountry({
-                  country,
-                  cases,
-                  death,
-                  tests,
-                  population,
-                  time: moment(time).format('lll'),
-                  timediff: `Updated ${moment().diff(moment(time), 'minutes')} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
-                });
-              }
-            }
-          }}
-        />
+        <MainGlobalCase data={countriesList} onHover={handleMainGlobalCaseHover} onClick={handleMainGlobalCaseClick} />
       </section>
+      {/* <section>
+        {globalQuery.data.map((country) => (
+          <p></p>
+        ))}
+      </section> */}
       {/* <section>
           <MainUsCase data={[]} onClick={() => {}} onHover={() => {}} scale={1070} yValue={1.9} xValue={1.25} />
         </section> */}

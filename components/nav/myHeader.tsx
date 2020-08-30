@@ -81,19 +81,16 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
         <div className="hero-body">
           <div className="container">
             <h1 className="title">Covid 19 Statistics</h1>
-            <h2 className="subtitle">A simple webpage display covid-19 latest statistics data</h2>
+            <h2 className="subtitle">with latest realtime data</h2>
             {pathname != '/uscase' && (
               <>
                 <h6 className="subtitle is-6">
                   <i>{`Want to check more around domastic?  `}</i>
-                  <span className="icon has-text-dark">
-                    <i className="fas fa-arrow-right"></i>
-                  </span>
+                  <i className="fas fa-arrow-right"></i>
                   <a className="is-link" href="/uscase">
                     <b>US Domastic</b>
                   </a>
                 </h6>
-                <h6 className="subtitle is-6"></h6>
               </>
             )}
             <h6 className="subtitle is-6">
