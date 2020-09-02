@@ -66,11 +66,24 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
             <div className="navbar-item">
               <div className="buttons">
                 <a
-                  className="button is-dark"
+                  className="button is-light"
                   href="https://www.who.int/emergencies/diseases/novel-coronavirus-2019"
                   target="_blank"
+                  rel="noreferrer"
                 >
-                  <strong>Lean More on WHO</strong>
+                  <strong>Lean COVID-19 on WHO</strong>
+                </a>
+              </div>
+            </div>
+            <div className="navbar-item">
+              <div className="buttons">
+                <a
+                  className="button is-dark"
+                  href="https://github.com/vincecao/COVID19-statistics"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <i className="fab fa-github"></i>
                 </a>
               </div>
             </div>
