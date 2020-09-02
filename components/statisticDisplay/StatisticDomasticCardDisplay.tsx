@@ -76,14 +76,14 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
             </div>
 
             {/* <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-dark">Recovered</span>
-                            <span className="tag is-info">
-                              {d3.format(',')(selectState.recovered['total'])}
-                              {selectState.recovered['new'] ? `(+${d3.format(',')(selectState.recovered['new'])})` : ''}
-                            </span>
-                          </div>
-                        </div> */}
+              <div className="tags has-addons">
+                <span className="tag is-dark">Recovered</span>
+                <span className="tag is-info">
+                  {d3.format(',')(selectState.recovered['total'])}
+                  {selectState.recovered['new'] ? `(+${d3.format(',')(selectState.recovered['new'])})` : ''}
+                </span>
+              </div>
+            </div> */}
 
             {/* <small>{selectCountry.state.code}</small>  */}
           </div>

@@ -1,9 +1,11 @@
 # COVID19-statistics
 
+[covid-19-statistics](https://covid-19-statistics.vercel.app/)
+
 #### Desktop
 
 ![](./screenshots/global.png)
-![](./screenshots/domastic.png)
+![](./screenshots/caseRank.png)
 
 #### Mobile
 

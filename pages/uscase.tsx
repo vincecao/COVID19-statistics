@@ -11,6 +11,8 @@ import { getState, convertRegion } from '../components/helperLib/help';
 import { StatisticDomasticCardDisplay } from '../components/statisticDisplay/StatisticDomasticCardDisplay';
 import { StatisticDomasticLevelDisplay } from '../components/statisticDisplay/StatisticDomasticLevelDisplay';
 import Loading from '../components/basic/Loading';
+import { AutoComplete } from '../components/basic/AutoComplete';
+import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
 
 const TO_NAME = 1;
 const TO_ABBREVIATED = 2;
@@ -55,13 +57,13 @@ export default function Uscase() {
     return moment.utc(moment.duration(diff_s, 'seconds').asMilliseconds()).format('hh:mm:ss');
   };
 
-  // useEffect(() => {
-  //   console.log(selectState);
-  // }, [selectState]);
+  useEffect(() => {
+    console.log(selectState);
+  }, [selectState]);
 
-  // useEffect(() => {
-  //   console.log(stateList);
-  // }, [stateList]);
+  useEffect(() => {
+    console.log(stateList);
+  }, [stateList]);
 
   // useEffect(() => {
   //   console.log(currentGuestLocaltion);
@@ -99,33 +101,35 @@ export default function Uscase() {
         },
       })
       .then((response: { data: { data: [] } }) => {
-        return response.data.data.map((stateData: any) => ({
-          id: stateData.region.province,
-          value: stateData.confirmed,
-          state: {
-            name: stateData.region.province,
-            code: convertRegion(stateData.region.province, TO_ABBREVIATED),
-          },
-          cases: {
-            total: stateData.confirmed,
-            new: stateData.confirmed_diff,
-          },
-          death: {
-            total: stateData.deaths,
-            new: stateData.deaths_diff,
-          },
-          active: {
-            total: stateData.active,
-            new: stateData.active_diff,
-          },
-          recovered: {
-            total: stateData.recovered,
-            new: stateData.recovered_diff,
-          },
-          fatalityRate: stateData.fatality_rate,
-          cities: stateData.cities,
-          time: moment.utc(stateData.last_update).toDate(), //utc to local， moment(time).local().format('YYYY-MM-DD HH:mm:ss')
-        }));
+        return response.data.data
+          .map((stateData: any) => ({
+            id: stateData.region.province,
+            value: stateData.confirmed,
+            state: {
+              name: stateData.region.province,
+              code: convertRegion(stateData.region.province, TO_ABBREVIATED),
+            },
+            cases: {
+              total: stateData.confirmed,
+              new: stateData.confirmed_diff,
+            },
+            death: {
+              total: stateData.deaths,
+              new: stateData.deaths_diff,
+            },
+            active: {
+              total: stateData.active,
+              new: stateData.active_diff,
+            },
+            recovered: {
+              total: stateData.recovered,
+              new: stateData.recovered_diff,
+            },
+            fatalityRate: stateData.fatality_rate,
+            cities: stateData.region.cities,
+            time: moment.utc(stateData.last_update).toDate(), //utc to local， moment(time).local().format('YYYY-MM-DD HH:mm:ss')
+          }))
+          .filter((s) => s.id !== 'Recovered');
       })
       .catch((error) => {
         console.log(error);
@@ -216,6 +220,51 @@ export default function Uscase() {
   return (
     <main>
       <MyHeader />
+      <StatisticTopGroup
+        data={stateList
+          .sort((a, b) => b.value - a.value)
+          .map((state) => ({
+            topValue: state.value,
+            topId: state.id,
+            topOnClick: () => updateSelect(state),
+            ...state,
+          }))}
+        title={`confirmed cases states in US`}
+        defaultTopNumber={5}
+        colorPattern="YlOrRd"
+      />
+      <StatisticTopGroup
+        data={selectState.cities
+          .sort((a, b) => b.confirmed - a.confirmed)
+          .map((city) => ({
+            topValue: city.confirmed,
+            topId: city.name,
+            topOnClick: () => {},
+            ...city,
+          }))}
+        title={`confirmed cases cities in ${selectState.state.name}`}
+        defaultTopNumber={7}
+        colorPattern="PuRd"
+      />
+      {/* <div className="level">
+        <div className="level-item">
+          <AutoComplete
+            name="city"
+            label="City"
+            placeholder="Choose a city"
+            data={selectState.cities.map((c) => c.name)}
+          />
+        </div>
+        <div className="level-item">
+          <AutoComplete
+            name="state"
+            label="State"
+            placeholder="Choose a state"
+            data={stateList.map((s) => s.id)}
+          />
+        </div>
+      </div> */}
+
       <section id="sticky-container">
         {stateList.length === 0 && (
           <>

@@ -9,6 +9,7 @@ import { MyHeader } from '../components/nav/myHeader';
 import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
 import { StatisticGlobalLevelDisplay } from '../components/statisticDisplay/StatisticGlobalLevelDisplay';
 import Loading from '../components/basic/Loading';
+import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
 
 const moment = require('moment');
 
@@ -254,6 +255,19 @@ export default function Home() {
   return (
     <main>
       <MyHeader />
+      <StatisticTopGroup
+        data={countriesList
+          .sort((a, b) => b.value - a.value)
+          .map((country) => ({
+            topValue: country.value,
+            topId: country.name,
+            topOnClick: () => updateSelect(country),
+            ...country,
+          }))}
+        title={`confirmed cases countries in global`}
+        defaultTopNumber={10}
+        colorPattern="GnBu"
+      />
       <section id="sticky-container">
         {globalQuery.status === 'loading' && (
           <>
