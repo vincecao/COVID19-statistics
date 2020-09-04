@@ -8,7 +8,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@nivo/axes": "^0.62.0",
+    "@nivo/bump": "^0.62.0",
     "@nivo/geo": "^0.62.0",
+    "@nivo/pie": "^0.62.0",
+    "@nivo/stream": "^0.62.0",
     "axios": "^0.20.0",
     "bulma": "^0.9.0",
     "d3-format": "^2.0.0",

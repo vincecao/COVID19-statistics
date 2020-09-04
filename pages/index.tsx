@@ -3,13 +3,17 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, queryCache } from 'react-query';
 import GlobalMap from '../components/global/globalMap';
 import MainGlobalCase from '../components/global/mainGlobalCase';
-import { __api_host__, __api_host2__, __api_key__ } from '../data/const';
+import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
 import MainUsCase from '../components/usdomastic/mainUsCase';
 import { MyHeader } from '../components/nav/myHeader';
 import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
 import { StatisticGlobalLevelDisplay } from '../components/statisticDisplay/StatisticGlobalLevelDisplay';
 import Loading from '../components/basic/Loading';
 import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
+import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGraph';
+import { Container } from '../components/bulmaComponents/Container';
+import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
+import { Card } from '../components/bulmaComponents/Card';
 
 const moment = require('moment');
 const uniqid = require('uniqid');
@@ -26,9 +30,15 @@ interface countriesListType {
     'code-3': string;
     'code-2': string;
   };
-  cases: {};
-  death: {};
-  tests: {};
+  cases: {
+    total: number;
+  };
+  death: {
+    total: number;
+  };
+  tests: {
+    total: number;
+  };
   population: string;
   time: any;
   timediff: string;
@@ -42,9 +52,15 @@ export default function Home() {
       'code-3': '',
       'code-2': '',
     },
-    cases: {},
-    death: {},
-    tests: {},
+    cases: {
+      total: 0,
+    },
+    death: {
+      total: 0,
+    },
+    tests: {
+      total: 0,
+    },
     population: '',
     time: null,
     timediff: '',
@@ -55,6 +71,8 @@ export default function Home() {
   });
   // const [syncing, setSyncing] = useState(false);
 
+  const [provinceStreamData, setProvinceStreamData] = useState([]);
+
   const caseDisplayRef = useRef(null);
 
   // useEffect(() => {
@@ -64,6 +82,10 @@ export default function Home() {
   // useEffect(() => {
   //   console.log({ selectCountry });
   // }, [selectCountry]);
+
+  // useEffect(() => {
+  //   console.log(provinceStreamData);
+  // }, [provinceStreamData]);
 
   // get localGeustLocation
   useEffect(() => {
@@ -242,6 +264,76 @@ export default function Home() {
     });
   };
 
+  const getDailyConfirmedCasesWithProvince = async (index, country) =>
+    await axios
+      .get(`https://${__api_host3__}/reports`, {
+        headers: {
+          'content-type': 'application/octet-stream',
+          'x-rapidapi-host': __api_host3__,
+          'x-rapidapi-key': __api_key__,
+          useQueryString: true,
+        },
+        params: {
+          iso: country['code-3'],
+          date: moment().subtract(index, 'days').format('YYYY-MM-DD'),
+        },
+      })
+      .then((response) => {
+        /*
+          {
+            "date": "2020-09-03",
+            "confirmed": 991,
+            "deaths": 6,
+            "recovered": 985,
+            "confirmed_diff": 0,
+            "deaths_diff": 0,
+            "recovered_diff": 0,
+            "last_update": "2020-09-04 04:28:26",
+            "active": 0,
+            "active_diff": 0,
+            "fatality_rate": 0.0061,
+            "region": {
+                "iso": "CHN",
+                "name": "China",
+                "province": "Anhui",
+                "lat": "31.8257",
+                "long": "117.2264",
+                "cities": []
+            }
+        },
+        */
+        const reducer = (acc, cur) => ({
+          ...acc,
+          [cur.province]: cur.confirmed,
+        });
+        return response.data.data
+          .sort((a, b) => b.confirmed - a.confirmed)
+          .slice(0, 6)
+          .map((p) => ({
+            province: p.region.province,
+            confirmed: p.confirmed,
+          }))
+          .reduce(reducer, {});
+      })
+      .then((newProvinceStreamData = {}) => {
+        if (Object.keys(newProvinceStreamData).length > 0) {
+          setProvinceStreamData((_provinceStreamData) => [..._provinceStreamData, newProvinceStreamData]);
+        }
+        return newProvinceStreamData;
+      })
+      .then(console.log)
+      .catch(console.error);
+
+  useEffect(() => {
+    if (selectCountry && selectCountry.country && selectCountry.country['code-3']) {
+      const { country } = selectCountry;
+      for (let index = 0; index < 8; index++) {
+        getDailyConfirmedCasesWithProvince(index, country);
+      }
+    }
+    return () => setProvinceStreamData([]);
+  }, [selectCountry.country.name]);
+
   const handleMainGlobalCaseHover = (e) => {
     let myTooltip = document.createElement('div');
     // myTooltip.id = 'myToolTip';
@@ -302,6 +394,51 @@ export default function Home() {
                 Refresh
               </button> */}
             </div>
+            <Container>
+              <div className="columns">
+                <div
+                  className="column"
+                  style={{
+                    maxWidth: 400,
+                  }}
+                >
+                  <StatisticPieGraph
+                    pieData={{
+                      data: [
+                        {
+                          id: 'cases',
+                          label: 'cases',
+                          value: selectCountry.cases.total,
+                          color: 'hsl(178, 70%, 50%)',
+                        },
+                        {
+                          id: 'deaths',
+                          label: 'deaths',
+                          value: selectCountry.death.total,
+                          color: 'hsl(197, 70%, 50%)',
+                        },
+                        // {
+                        //   id: 'tests',
+                        //   label: 'tests',
+                        //   value: selectCountry.tests.total,
+                        //   color: 'hsl(163, 70%, 50%)',
+                        // },
+                      ],
+                    }}
+                  />
+                </div>
+                <div className="column">
+                  <StatisticStreamGraph
+                    streamData={{
+                      data: provinceStreamData,
+                      key: provinceStreamData.length === 0 ? [] : Object.keys(provinceStreamData[0]),
+                      horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
+                    }}
+                    colorScheme="purple_orange"
+                  />
+                </div>
+              </div>
+            </Container>
             {sticky && (
               <div
                 style={{

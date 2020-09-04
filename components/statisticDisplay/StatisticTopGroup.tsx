@@ -52,7 +52,13 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
           <h4 className="title is-4">
             Top {displayAmount} {title}
           </h4>
-          <div className="field is-grouped is-grouped-multiline">
+          <div
+            className="field is-grouped is-grouped-multiline"
+            style={{
+              maxHeight: 300,
+              overflowX: 'auto',
+            }}
+          >
             {data
               .slice(0, displayAmount)
               // .map((el) => ({ ...el, elId: uniqid() }))
