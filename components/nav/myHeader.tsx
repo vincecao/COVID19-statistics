@@ -19,7 +19,7 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
         aria-label="main navigation"
       >
         <div className="navbar-brand">
-          <a className="navbar-item" style={{ background: 'white' }} href="https://covid-19-statistics.vercel.app/">
+          <a className="navbar-item" style={{ background: 'white' }} href="/">
             <img
               src="https://avatars1.githubusercontent.com/u/17363908?s=460&u=1d1a597b0eae2c71ff30cc852056bd869a0450f6&v=4"
               height="28"

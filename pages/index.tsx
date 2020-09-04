@@ -12,7 +12,7 @@ import Loading from '../components/basic/Loading';
 import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
 
 const moment = require('moment');
-
+const uniqid = require('uniqid');
 const axios = require('axios');
 
 const COUNTRY_LIST = require('../data/country_list.json');
@@ -131,28 +131,30 @@ export default function Home() {
               })
               .then((response) => {
                 resolve(
-                  response.data.response.map((statistic) => {
-                    if (countryMap[statistic.country]) {
+                  response.data.response
+                    .map((statistic) => {
+                      if (countryMap[statistic.country]) {
+                        return {
+                          name: statistic.country,
+                          id: countryMap[statistic.country]['code-3'],
+                          country: {
+                            name: statistic.country,
+                            'code-3': countryMap[statistic.country]['code-3'],
+                            'code-2': countryMap[statistic.country]['code-2'],
+                          },
+                          value: statistic.cases.total,
+                          cases: statistic.cases,
+                          death: statistic.deaths,
+                          tests: statistic.tests,
+                          population: statistic.population,
+                          time: statistic.time,
+                        };
+                      }
                       return {
                         name: statistic.country,
-                        id: countryMap[statistic.country]['code-3'],
-                        country: {
-                          name: statistic.country,
-                          'code-3': countryMap[statistic.country]['code-3'],
-                          'code-2': countryMap[statistic.country]['code-2'],
-                        },
-                        value: statistic.cases.total,
-                        cases: statistic.cases,
-                        death: statistic.deaths,
-                        tests: statistic.tests,
-                        population: statistic.population,
-                        time: statistic.time,
                       };
-                    }
-                    return {
-                      name: statistic.country,
-                    };
-                  })
+                    })
+                    .map((el: {}) => ({ ...el, elId: uniqid() }))
                 );
               })
               .catch(reject)

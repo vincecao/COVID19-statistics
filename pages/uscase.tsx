@@ -18,9 +18,8 @@ const TO_NAME = 1;
 const TO_ABBREVIATED = 2;
 
 const moment = require('moment');
-
+const uniqid = require('uniqid');
 const axios = require('axios');
-const d3 = require('d3-format');
 
 const iso_countries = require('i18n-iso-countries');
 iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -57,13 +56,13 @@ export default function Uscase() {
     return moment.utc(moment.duration(diff_s, 'seconds').asMilliseconds()).format('hh:mm:ss');
   };
 
-  useEffect(() => {
-    console.log(selectState);
-  }, [selectState]);
+  // useEffect(() => {
+  //   console.log(selectState);
+  // }, [selectState]);
 
-  useEffect(() => {
-    console.log(stateList);
-  }, [stateList]);
+  // useEffect(() => {
+  //   console.log(stateList);
+  // }, [stateList]);
 
   // useEffect(() => {
   //   console.log(currentGuestLocaltion);
@@ -126,10 +125,11 @@ export default function Uscase() {
               new: stateData.recovered_diff,
             },
             fatalityRate: stateData.fatality_rate,
-            cities: stateData.region.cities,
+            cities: stateData.region.cities.map((el: {}) => ({ ...el, elId: uniqid() })),
             time: moment.utc(stateData.last_update).toDate(), //utc to local， moment(time).local().format('YYYY-MM-DD HH:mm:ss')
           }))
-          .filter((s) => s.id !== 'Recovered');
+          .filter((s) => s.id !== 'Recovered')
+          .map((el: {}) => ({ ...el, elId: uniqid() }));
       })
       .catch((error) => {
         console.log(error);
