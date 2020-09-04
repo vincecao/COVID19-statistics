@@ -4,7 +4,7 @@
 
 #### Desktop
 
-![](./screenshots/global.png)
+![](./screenshots/graphs.png)
 ![](./screenshots/caseRank.png)
 
 #### Mobile
@@ -13,17 +13,17 @@
 
 ## Stack:
 
-- [next.js](https://nextjs.org/)
-- Typescript
-- [react-query](https://react-query.tanstack.com/)
-- [bulma](https://bulma.io/)
-- [nivo](https://nivo.rocks/)
-- [rapidapi](https://rapidapi.com/)
-- [vercel](vercel.com)
+* [next.js](https://nextjs.org/)
+* Typescript
+* [react-query](https://react-query.tanstack.com/)
+* [bulma](https://bulma.io/)
+* [nivo](https://nivo.rocks/)
+* [rapidapi](https://rapidapi.com/)
+* [vercel](vercel.com)
 
 ## Deploy
 
-```js
+``` js
 /* Config env, add .env file with following three environment
  - API_KEY
  - COVID_API_HOST: covid-19-data.p.rapidapi.com
@@ -40,5 +40,5 @@ yarn dev
 
 ## Features
 
-- Always syncing with latest covid19 statistic
-- Global and US domastic wide
+* Always syncing with latest covid19 statistic with countries and its provinces
+* Global and US domastic wide
