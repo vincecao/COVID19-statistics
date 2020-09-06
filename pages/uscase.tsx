@@ -286,7 +286,7 @@ export default function Uscase() {
 
       <Container
         variants={setContainerVariants(2)}
-        key={selectState.state.name}
+        key={`top-data-${selectState.state.name}`}
         isVisible={selectState.cities.length > 0}
       >
         <StatisticTopGroup
@@ -341,6 +341,7 @@ export default function Uscase() {
         )}
 
         <Container
+          key={`level-data-${selectState.state.name}`}
           variants={setContainerVariants(3)}
           isVisible={typeof selectState.state.name === 'string' && stateList.length > 0}
         >

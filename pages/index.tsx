@@ -13,7 +13,6 @@ import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGr
 import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGraph';
 import { Container } from '../components/bulmaComponents/Container';
 import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
-import { Card } from '../components/bulmaComponents/Card';
 import { motion } from 'framer-motion';
 import { FixContainer } from '../components/bulmaComponents/FixContainer';
 
@@ -431,6 +430,7 @@ export default function Home() {
         )}
 
         <Container
+          key={`level-data-${selectCountry.country.name}`}
           variants={setContainerVariants(3)}
           isVisible={typeof selectCountry.country.name === 'string' && countriesList.length > 0}
         >
@@ -461,7 +461,11 @@ export default function Home() {
           />
         </FixContainer>
 
-        <Container variants={setContainerVariants(4)} isVisible={countriesList.length > 0}>
+        <Container
+          key={`graph-data-${selectCountry.country.name}`}
+          variants={setContainerVariants(4)}
+          isVisible={countriesList.length > 0}
+        >
           <div className="columns">
             <div
               className="column"
