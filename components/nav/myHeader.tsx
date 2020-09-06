@@ -20,6 +20,16 @@ const setHeaderItemVariant = (index: number) => ({
   },
 });
 
+const buttonVariants = {
+  hover: {
+    scale: 1.05,
+    transition: {
+      duration: 0.4,
+      yoyo: Infinity,
+    },
+  },
+};
+
 export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   const [pathname, setPathname] = useState('/');
@@ -98,26 +108,30 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
           <div className="navbar-end">
             <div className="navbar-item">
               <motion.div variants={setHeaderItemVariant(1)} initial="hidden" animate="visible" className="buttons">
-                <a
+                <motion.a
+                  variants={buttonVariants}
+                  whileHover="hover"
                   className="button is-light"
                   href="https://www.who.int/emergencies/diseases/novel-coronavirus-2019"
                   target="_blank"
                   rel="noreferrer"
                 >
                   <strong>Lean COVID-19 on WHO</strong>
-                </a>
+                </motion.a>
               </motion.div>
             </div>
             <div className="navbar-item">
               <motion.div variants={setHeaderItemVariant(2)} initial="hidden" animate="visible" className="buttons">
-                <a
+                <motion.a
+                  variants={buttonVariants}
+                  whileHover="hover"
                   className="button is-dark"
                   href="https://github.com/vincecao/COVID19-statistics"
                   target="_blank"
                   rel="noreferrer"
                 >
                   <i className="fab fa-github"></i>
-                </a>
+                </motion.a>
               </motion.div>
             </div>
           </div>
@@ -128,26 +142,37 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
           <motion.div variants={setHeaderItemVariant(1)} initial="hidden" animate="visible" className="container">
             <h1 className="title">Covid 19 Statistics</h1>
             <h2 className="subtitle">with latest realtime data</h2>
-            {pathname != '/uscase' && (
-              <>
-                <motion.h6
-                  variants={setHeaderItemVariant(2)}
-                  initial="hidden"
-                  animate="visible"
-                  // transition={{ delay: 0.7, type: 'spring', stiffness: 120 }}
-                  className="subtitle is-6"
-                >
-                  <i>{`Want to check more around domastic?  `}</i>
-                  <i className="fas fa-arrow-right"></i>
-                  <a className="is-link" href="/uscase">
-                    <b>US Domastic</b>
-                  </a>
-                </motion.h6>
-              </>
-            )}
-            <h6 className="subtitle is-6">
-              <i>More features coming soon...</i>
-            </h6>
+            <motion.nav variants={setHeaderItemVariant(2)} initial="hidden" animate="visible" className="level">
+              <div className="level-left">
+                <div className="level-item">
+                  <h6 className="subtitle is-6">
+                    <i>More features coming soon...</i>
+                  </h6>
+                </div>
+              </div>
+              {pathname != '/uscase' && (
+                <div className="level-right">
+                  <div className="level-item">
+                    <p className="subtitle is-6">
+                      <strong>Want to check more around domastic?</strong>
+                    </p>
+                  </div>
+                  <div className="level-item">
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      className="button is-small is-dark"
+                      onClick={() => (window.location.href = '/uscase')}
+                    >
+                      <span>US Domastic</span>
+                      <span className="icon is-small">
+                        <i className="fas fa-arrow-right"></i>
+                      </span>
+                    </motion.button>
+                  </div>
+                </div>
+              )}
+            </motion.nav>
           </motion.div>
         </div>
       </section>
