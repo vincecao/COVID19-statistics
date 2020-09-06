@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 interface StickyDisplayCardProps {
   children: any;
   areaHeading: string;
-  areaImgSrc: string;
+  areaImgSrc?: string;
   areaImgStyle?: {};
   updateTimeInfo: string;
   variants: {};
@@ -13,7 +13,7 @@ interface StickyDisplayCardProps {
 export const StickyDisplayCard: React.FC<StickyDisplayCardProps> = ({
   areaHeading,
   updateTimeInfo,
-  areaImgSrc,
+  areaImgSrc = '',
   areaImgStyle = {},
   children,
   variants,
@@ -21,17 +21,19 @@ export const StickyDisplayCard: React.FC<StickyDisplayCardProps> = ({
   return (
     <div className="box">
       <article className="media">
-        <div className="media-left">
-          <motion.figure variants={variants} initial="hidden" animate="visible" className="image is-64x64">
-            <img
-              style={{
-                ...areaImgStyle,
-              }}
-              src={areaImgSrc}
-              alt="Image"
-            />
-          </motion.figure>
-        </div>
+        {areaImgSrc && (
+          <div className="media-left">
+            <motion.figure variants={variants} initial="hidden" animate="visible" className="image is-64x64">
+              <img
+                style={{
+                  ...areaImgStyle,
+                }}
+                src={areaImgSrc}
+                alt="Image"
+              />
+            </motion.figure>
+          </div>
+        )}
         <div className="media-content">
           <div className="content">
             <motion.p variants={variants} initial="hidden" animate="visible">

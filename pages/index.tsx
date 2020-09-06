@@ -1,11 +1,7 @@
-import Head from 'next/head';
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, queryCache } from 'react-query';
-import GlobalMap from '../components/global/globalMap';
 import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
-import MainUsCase from '../components/usdomastic/mainUsCase';
-import { MyHeader } from '../components/nav/myHeader';
 import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
 import { StatisticGlobalLevelDisplay } from '../components/statisticDisplay/StatisticGlobalLevelDisplay';
 import Loading from '../components/basic/Loading';
@@ -13,7 +9,7 @@ import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGr
 import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGraph';
 import { Container } from '../components/bulmaComponents/Container';
 import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FixContainer } from '../components/bulmaComponents/FixContainer';
 
 const moment = require('moment');
@@ -45,7 +41,7 @@ interface countriesListType {
   timediff: string;
 }
 
-export default function Home() {
+const Home = () => {
   const [countriesList, setCountriesList] = useState([]);
   const [selectCountry, setSelectCountry] = useState({
     country: {
@@ -281,28 +277,28 @@ export default function Home() {
       })
       .then((response) => {
         /*
-          {
-            "date": "2020-09-03",
-            "confirmed": 991,
-            "deaths": 6,
-            "recovered": 985,
-            "confirmed_diff": 0,
-            "deaths_diff": 0,
-            "recovered_diff": 0,
-            "last_update": "2020-09-04 04:28:26",
-            "active": 0,
-            "active_diff": 0,
-            "fatality_rate": 0.0061,
-            "region": {
-                "iso": "CHN",
-                "name": "China",
-                "province": "Anhui",
-                "lat": "31.8257",
-                "long": "117.2264",
-                "cities": []
-            }
-        },
-        */
+        {
+          "date": "2020-09-03",
+          "confirmed": 991,
+          "deaths": 6,
+          "recovered": 985,
+          "confirmed_diff": 0,
+          "deaths_diff": 0,
+          "recovered_diff": 0,
+          "last_update": "2020-09-04 04:28:26",
+          "active": 0,
+          "active_diff": 0,
+          "fatality_rate": 0.0061,
+          "region": {
+              "iso": "CHN",
+              "name": "China",
+              "province": "Anhui",
+              "lat": "31.8257",
+              "long": "117.2264",
+              "cities": []
+          }
+      },
+      */
         const reducer = (acc, cur) => ({
           ...acc,
           [cur.province]: cur.confirmed,
@@ -317,21 +313,29 @@ export default function Home() {
           .reduce(reducer, {});
       })
       .then((newProvinceStreamData = {}) => {
-        if (Object.keys(newProvinceStreamData).length > 0) {
-          setProvinceStreamData((_provinceStreamData) => [..._provinceStreamData, newProvinceStreamData]);
-        }
+        console.log(newProvinceStreamData);
         return newProvinceStreamData;
       })
-      .then(console.log)
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        return {};
+      });
 
   useEffect(() => {
     if (selectCountry && selectCountry.country && selectCountry.country['code-3']) {
       const { country } = selectCountry;
+
+      let tempProviceData = [];
       for (let index = 0; index < 8; index++) {
-        getDailyConfirmedCasesWithProvince(index, country);
+        getDailyConfirmedCasesWithProvince(index, country).then((object) => {
+          if (Object.keys(object).length > 0) {
+            tempProviceData.push(object);
+          }
+        });
       }
+      setProvinceStreamData(tempProviceData);
     }
+
     return () => setProvinceStreamData([]);
   }, [selectCountry.country.name]);
 
@@ -348,7 +352,7 @@ export default function Home() {
   };
 
   // framer motion
-  const mainVariant = {
+  const mainVariants = {
     hidden: {
       opacity: 0,
     },
@@ -356,24 +360,39 @@ export default function Home() {
       opacity: 1,
       transition: {
         when: 'beforeChildren',
-        staggerChildren: 1,
+        staggerChildren: 0.1,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.1,
+        // ease: 'easeInOut',
+        // duration: 0.7,
       },
     },
   };
 
   const setContainerVariants = (index: number) => ({
     hidden: {
-      // opacity: 0,
+      opacity: 0,
       x: '100vw',
     },
     visible: {
-      // opacity: 1,
+      opacity: 1,
       x: 0,
       transition: {
         type: 'spring',
         mass: 0.4,
         damping: 8,
-        delay: 0.3 * index,
+        delay: 0.2 * index,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: 10,
+      transition: {
+        ease: 'easeInOut',
       },
     },
   });
@@ -385,16 +404,20 @@ export default function Home() {
     visible: {
       y: 0,
       transition: {
-        type: 'spring',
-        mass: 0.4,
-        damping: 8,
+        type: 'tween',
+      },
+    },
+    exit: {
+      y: '-50vh',
+      transition: {
+        ease: 'easeInOut',
       },
     },
   };
 
   return (
-    <motion.main variants={mainVariant} initial="hidden" animate="visible">
-      <MyHeader />
+    <motion.main variants={mainVariants} initial="hidden" animate="visible" exit="exit">
+      {globalQuery.isFetching && <Loading />}
       <Container variants={setContainerVariants(1)} isVisible={countriesList.length > 0}>
         <StatisticTopGroup
           data={countriesList
@@ -408,29 +431,13 @@ export default function Home() {
           title={`confirmed cases countries in global`}
           defaultTopNumber={10}
           colorPattern="GnBu"
+          selectedNameId={selectCountry.country.name}
         />
       </Container>
 
       <section id="sticky-container">
-        {globalQuery.status === 'loading' && (
-          <>
-            <Loading />
-            {sticky && (
-              <Loading
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  zIndex: 10,
-                }}
-              />
-            )}
-          </>
-        )}
-
         <Container
-          key={`level-data-${selectCountry.country.name}`}
+          animatekey={`level-data-${selectCountry.country.name}`}
           variants={setContainerVariants(3)}
           isVisible={typeof selectCountry.country.name === 'string' && countriesList.length > 0}
         >
@@ -457,12 +464,20 @@ export default function Home() {
           <StatisticGlobalCardDisplay
             selectCountry={selectCountry}
             onRefresh={handleRefreshButtonClick}
-            syncing={globalQuery.status === 'loading'}
+            syncing={globalQuery.isFetching}
           />
         </FixContainer>
 
+        <FixContainer
+          style={{ background: 'none', zIndex: 11 }}
+          variants={stickyVariants}
+          isVisible={sticky && globalQuery.isFetching}
+        >
+          <Loading />
+        </FixContainer>
+
         <Container
-          key={`graph-data-${selectCountry.country.name}`}
+          animatekey={`graph-data-${selectCountry.country.name}`}
           variants={setContainerVariants(4)}
           isVisible={countriesList.length > 0}
         >
@@ -470,7 +485,7 @@ export default function Home() {
             <div
               className="column"
               style={{
-                maxWidth: provinceStreamData.length === 8 ? 400 : '100%',
+                maxWidth: provinceStreamData.length > 0 ? 400 : '100%',
                 transition: 'all 0.4s',
               }}
             >
@@ -499,17 +514,25 @@ export default function Home() {
                 }}
               />
             </div>
-            {provinceStreamData.length === 8 && (
-              <motion.div variants={setContainerVariants(4)} className="column">
-                <StatisticStreamGraph
-                  streamData={{
-                    data: provinceStreamData,
-                    key: Object.keys(provinceStreamData[0]),
-                    horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
-                  }}
-                  colorScheme="purple_orange"
-                />
-              </motion.div>
+            {provinceStreamData.length > 0 && (
+              <AnimatePresence>
+                <motion.div
+                  variants={setContainerVariants(4)}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="column"
+                >
+                  <StatisticStreamGraph
+                    streamData={{
+                      data: provinceStreamData,
+                      key: Object.keys(provinceStreamData[0]),
+                      horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
+                    }}
+                    colorScheme="purple_orange"
+                  />
+                </motion.div>
+              </AnimatePresence>
             )}
           </div>
         </Container>
@@ -520,4 +543,10 @@ export default function Home() {
       </Container>
     </motion.main>
   );
-}
+};
+
+Home.getInitialProps = ({}) => {
+  return {};
+};
+
+export default Home;

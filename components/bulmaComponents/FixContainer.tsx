@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ContainerProps {
   children: any;
@@ -10,22 +10,25 @@ interface ContainerProps {
 
 export const FixContainer: React.FC<ContainerProps> = ({ children, style = {}, variants = {}, isVisible = true }) => {
   return (
-    isVisible && (
-      <motion.div
-        style={{
-          ...style,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          zIndex: 10,
-        }}
-        variants={variants}
-        initial="hidden"
-        animate="visible"
-      >
-        {children}
-      </motion.div>
-    )
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 10,
+            ...style,
+          }}
+          variants={variants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

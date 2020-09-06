@@ -18,7 +18,7 @@ interface StatisticGlobalCardDisplayProps {
   onRefresh: any;
 }
 
-const setCardItemVariant = (index: number) => ({
+const setCardItemVariants = (index: number) => ({
   hidden: {
     y: '-50vh',
   },
@@ -44,20 +44,20 @@ export const StatisticGlobalCardDisplay: React.FC<StatisticGlobalCardDisplayProp
       areaImgSrc={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
       updateTimeInfo={selectCountry.timediff}
       key={selectCountry.country['name']}
-      variants={setCardItemVariant(0)}
+      variants={setCardItemVariants(0)}
     >
       <CardItem
         tagIntent="light"
         tagHeading="Population"
         tagContent={d3.format(',.2s')(selectCountry.population)}
-        variants={setCardItemVariant(1)}
+        variants={setCardItemVariants(1)}
       />
 
       <CardItem
         tagIntent="info"
         tagHeading="Tests"
         tagContent={d3.format(',')(selectCountry.tests['total'])}
-        variants={setCardItemVariant(2)}
+        variants={setCardItemVariants(2)}
       />
 
       <CardItem
@@ -65,7 +65,7 @@ export const StatisticGlobalCardDisplay: React.FC<StatisticGlobalCardDisplayProp
         tagHeading="Cases"
         tagContent={`${d3.format(',')(selectCountry.cases['total'])}
         ${selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}`}
-        variants={setCardItemVariant(3)}
+        variants={setCardItemVariants(3)}
       />
 
       <CardItem
@@ -73,7 +73,7 @@ export const StatisticGlobalCardDisplay: React.FC<StatisticGlobalCardDisplayProp
         tagHeading="Death"
         tagContent={`${d3.format(',')(selectCountry.death['total'])}
         ${selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}`}
-        variants={setCardItemVariant(4)}
+        variants={setCardItemVariants(4)}
       />
     </StickyDisplayCard>
   );

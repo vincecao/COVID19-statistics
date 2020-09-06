@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, queryCache } from 'react-query';
-import GlobalMap from '../components/global/globalMap';
-import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
 import MainUsCase from '../components/usdomastic/mainUsCase';
-import { MyHeader } from '../components/nav/myHeader';
-import { HtmlHeader } from '../components/basic/htmlHeader';
-import { stat } from 'fs';
 import { getState, convertRegion } from '../components/helperLib/help';
 import { StatisticDomasticCardDisplay } from '../components/statisticDisplay/StatisticDomasticCardDisplay';
 import { StatisticDomasticLevelDisplay } from '../components/statisticDisplay/StatisticDomasticLevelDisplay';
 import Loading from '../components/basic/Loading';
-import { AutoComplete } from '../components/basic/AutoComplete';
 import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
 import { Container } from '../components/bulmaComponents/Container';
 import { motion } from 'framer-motion';
@@ -27,7 +21,7 @@ const axios = require('axios');
 const iso_countries = require('i18n-iso-countries');
 iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
-export default function Uscase() {
+const Uscase = () => {
   const [stateList, setStateList] = useState([]);
   const [selectState, setSelectState] = useState({
     state: {
@@ -221,7 +215,7 @@ export default function Uscase() {
   };
 
   // framer motion
-  const mainVariant = {
+  const mainVariants = {
     hidden: {
       opacity: 0,
     },
@@ -229,24 +223,39 @@ export default function Uscase() {
       opacity: 1,
       transition: {
         when: 'beforeChildren',
-        staggerChildren: 1,
+        staggerChildren: 0.1,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.1,
+        // ease: 'easeInOut',
+        // duration: 0.7,
       },
     },
   };
 
   const setContainerVariants = (index: number) => ({
     hidden: {
-      // opacity: 0,
+      opacity: 0,
       x: '100vw',
     },
     visible: {
-      // opacity: 1,
+      opacity: 1,
       x: 0,
       transition: {
         type: 'spring',
         mass: 0.4,
         damping: 8,
-        delay: 0.3 * index,
+        delay: 0.2 * index,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: 10,
+      transition: {
+        ease: 'easeInOut',
       },
     },
   });
@@ -258,16 +267,22 @@ export default function Uscase() {
     visible: {
       y: 0,
       transition: {
-        type: 'spring',
-        mass: 0.4,
-        damping: 8,
+        type: 'tween',
+      },
+    },
+    exit: {
+      y: '-50vh',
+      transition: {
+        ease: 'easeInOut',
       },
     },
   };
 
+  const [selectCityName, setSelectCityName] = useState('-1');
+
   return (
-    <motion.main variants={mainVariant} initial="hidden" animate="visible">
-      <MyHeader />
+    <motion.main variants={mainVariants} initial="hidden" animate="visible" exit="exit">
+      {domasticQuery.isFetching && <Loading />}
       <Container variants={setContainerVariants(1)} isVisible={stateList.length > 0}>
         <StatisticTopGroup
           data={stateList
@@ -281,12 +296,13 @@ export default function Uscase() {
           title={`confirmed cases states in US`}
           defaultTopNumber={5}
           colorPattern="YlOrRd"
+          selectedNameId={selectState.state.name}
         />
       </Container>
 
       <Container
         variants={setContainerVariants(2)}
-        key={`top-data-${selectState.state.name}`}
+        animatekey={`top-data-${selectState.state.name}`}
         isVisible={selectState.cities.length > 0}
       >
         <StatisticTopGroup
@@ -295,12 +311,13 @@ export default function Uscase() {
             .map((city) => ({
               topValue: city.confirmed,
               topId: city.name,
-              topOnClick: () => {},
+              topOnClick: (topId) => setSelectCityName(topId),
               ...city,
             }))}
           title={`confirmed cases cities in ${selectState.state.name}`}
           defaultTopNumber={7}
           colorPattern="PuRd"
+          selectedNameId={selectCityName}
         />
       </Container>
       {/* <div className="level">
@@ -323,25 +340,8 @@ export default function Uscase() {
       </div> */}
 
       <section id="sticky-container">
-        {stateList.length === 0 && (
-          <>
-            <Loading />
-            {sticky && (
-              <Loading
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  zIndex: 10,
-                }}
-              />
-            )}
-          </>
-        )}
-
         <Container
-          key={`level-data-${selectState.state.name}`}
+          animatekey={`level-data-${selectState.state.name}`}
           variants={setContainerVariants(3)}
           isVisible={typeof selectState.state.name === 'string' && stateList.length > 0}
         >
@@ -366,10 +366,24 @@ export default function Uscase() {
         >
           <StatisticDomasticCardDisplay selectState={selectState} />
         </FixContainer>
+
+        <FixContainer
+          style={{ background: 'none', zIndex: 11 }}
+          variants={stickyVariants}
+          isVisible={sticky && domasticQuery.isFetching}
+        >
+          <Loading />
+        </FixContainer>
       </section>
       <Container variants={setContainerVariants(4)} isVisible={stateList.length > 0}>
         <MainUsCase data={stateList} onHover={handleMainDomasticCaseHover} onClick={handleMainDomasticCaseClick} />
       </Container>
     </motion.main>
   );
-}
+};
+
+Uscase.getInitialProps = ({}) => {
+  return {};
+};
+
+export default Uscase;

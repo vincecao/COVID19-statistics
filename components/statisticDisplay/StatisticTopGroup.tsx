@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container } from '../bulmaComponents/Container';
 import { motion } from 'framer-motion';
 const d3 = require('d3-format');
 const d3_c = require('d3-scale-chromatic');
@@ -10,6 +9,7 @@ interface StatisticTopGroupProps {
   data: any;
   defaultTopNumber: number;
   colorPattern: string;
+  selectedNameId: string;
 }
 
 export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
@@ -17,13 +17,9 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
   data,
   defaultTopNumber,
   colorPattern,
+  selectedNameId,
 }) => {
   const [displayAmount, setDisplayAmount] = useState(defaultTopNumber);
-  const [selectedNameId, setSelectedNameId] = useState('');
-
-  // useEffect(() => {
-  //   console.log(selectedNameId);
-  // }, [selectedNameId]);
 
   const handleOnExpand = () => {
     if (displayAmount + 5 >= data.length) {
@@ -90,8 +86,7 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
                   // transition: '0.2s all',
                 }}
                 onClick={(e) => {
-                  el.topOnClick(e);
-                  setSelectedNameId(el.topId);
+                  el.topOnClick(el.topId);
                 }}
               >
                 <b>{el.topId}</b>&nbsp;

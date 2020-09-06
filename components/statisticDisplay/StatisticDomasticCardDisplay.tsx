@@ -1,7 +1,6 @@
 import React from 'react';
 import { CardItem } from '../bulmaComponents/StickyDisplayCard/CardItem';
 import { StickyDisplayCard } from '../bulmaComponents/StickyDisplayCard/StickyDisplayCard';
-import { motion } from 'framer-motion';
 
 const d3 = require('d3-format');
 
@@ -19,7 +18,7 @@ interface StatisticDomasticCardDisplayProps {
   };
 }
 
-const setCardItemVariant = (index: number) => ({
+const setCardItemVariants = (index: number) => ({
   hidden: {
     y: '-50vh',
   },
@@ -38,17 +37,19 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
   return (
     <StickyDisplayCard
       areaHeading={selectState.state['name']}
-      areaImgSrc={`http://flags.ox3.in/svg/us/${selectState.state.code.toLowerCase()}.svg`}
+      areaImgSrc={
+        selectState.state.code ? `http://flags.ox3.in/svg/us/${selectState.state.code.toLowerCase()}.svg` : ''
+      }
       areaImgStyle={{ marginTop: 15 }}
       updateTimeInfo={selectState.timediff}
       key={selectState.state['name']}
-      variants={setCardItemVariant(0)}
+      variants={setCardItemVariants(0)}
     >
       <CardItem
         tagIntent="light"
         tagHeading="Fatality Rate"
         tagContent={d3.format(',.2s')(selectState.fatalityRate)}
-        variants={setCardItemVariant(1)}
+        variants={setCardItemVariants(1)}
       />
 
       <CardItem
@@ -56,7 +57,7 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
         tagHeading="Cases"
         tagContent={`${d3.format(',')(selectState.cases['total'])}
               ${selectState.cases['new'] ? `(+${d3.format(',')(selectState.cases['new'])})` : ''}`}
-        variants={setCardItemVariant(2)}
+        variants={setCardItemVariants(2)}
       />
 
       <CardItem
@@ -64,7 +65,7 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
         tagHeading="Active"
         tagContent={`${d3.format(',')(selectState.active['total'])}
               ${selectState.active['new'] ? `(+${d3.format(',')(selectState.active['new'])})` : ''}`}
-        variants={setCardItemVariant(3)}
+        variants={setCardItemVariants(3)}
       />
 
       <CardItem
@@ -72,7 +73,7 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
         tagHeading="Death"
         tagContent={`${d3.format(',')(selectState.death['total'])}
               ${selectState.death['new'] ? `(+${d3.format(',')(selectState.death['new'])})` : ''}`}
-        variants={setCardItemVariant(4)}
+        variants={setCardItemVariants(4)}
       />
 
       {/* <CardItem
@@ -80,7 +81,7 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
           tagHeading="Recovered"
           tagContent={`${d3.format(',')(selectState.recovered['total'])}
         ${selectState.recovered['new'] ? `(+${d3.format(',')(selectState.recovered['new'])})` : ''}`}
-        variant={setCardItemVariant(5)}
+        variants={setCardItemVariant(5)}
         /> */}
     </StickyDisplayCard>
   );

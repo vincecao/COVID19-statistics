@@ -7,17 +7,17 @@ const MainGlobalCase = ({ data, onHover, onClick }) => {
   const [pTranslationY, setPTranslationY] = useState(0.55);
   const [pScale, setPScale] = useState(240);
 
-  useEffect(() => {
-    console.log(pScale);
-  }, [pScale]);
+  // useEffect(() => {
+  //   console.log(pScale);
+  // }, [pScale]);
 
-  useEffect(() => {
-    console.log(pTranslationY);
-  }, [pTranslationY]);
+  // useEffect(() => {
+  //   console.log(pTranslationY);
+  // }, [pTranslationY]);
 
-  useEffect(() => {
-    console.log(pTranslationX);
-  }, [pTranslationX]);
+  // useEffect(() => {
+  //   console.log(pTranslationX);
+  // }, [pTranslationX]);
 
   return (
     <>

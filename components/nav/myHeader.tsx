@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
-interface MyHeaderProps {}
+interface MyHeaderProps {
+  route: string;
+}
 
-const setHeaderItemVariant = (index: number) => ({
+const setHeaderItemVariants = (index: number) => ({
   hidden: {
     scale: 0.5,
     x: `-100vw`,
@@ -20,6 +23,30 @@ const setHeaderItemVariant = (index: number) => ({
   },
 });
 
+const usDomasticRedirectVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      mass: 0.4,
+      damping: 10,
+      delay: 0.5,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      type: 'spring',
+      mass: 0.4,
+      damping: 10,
+      delay: 0.5,
+    },
+  },
+};
+
 const buttonVariants = {
   hover: {
     scale: 1.05,
@@ -30,13 +57,13 @@ const buttonVariants = {
   },
 };
 
-export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
+export const MyHeader: React.FC<MyHeaderProps> = ({ route }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   const [pathname, setPathname] = useState('/');
 
   useEffect(() => {
-    setPathname(window.location.pathname);
-  }, []);
+    setPathname(route);
+  }, [route]);
 
   return (
     <>
@@ -47,15 +74,17 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
         aria-label="main navigation"
       >
         <div className="navbar-brand">
-          <a className="navbar-item" style={{ background: 'white' }} href="/">
-            <motion.img
-              variants={setHeaderItemVariant(0)}
-              initial="hidden"
-              animate="visible"
-              src="https://avatars1.githubusercontent.com/u/17363908?s=460&u=1d1a597b0eae2c71ff30cc852056bd869a0450f6&v=4"
-              height="20"
-            />
-          </a>
+          <Link href="/">
+            <a className="navbar-item" style={{ background: 'white' }}>
+              <motion.img
+                variants={setHeaderItemVariants(0)}
+                initial="hidden"
+                animate="visible"
+                src="https://avatars1.githubusercontent.com/u/17363908?s=460&u=1d1a597b0eae2c71ff30cc852056bd869a0450f6&v=4"
+                height="20"
+              />
+            </a>
+          </Link>
 
           <a
             role="button"
@@ -73,25 +102,26 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
 
         <div style={{ background: '#fbecb0' }} className={`navbar-menu ${isDropDownOpen ? 'is-active' : ''}`}>
           <div className="navbar-start">
-            <motion.a
-              variants={setHeaderItemVariant(0)}
-              initial="hidden"
-              animate="visible"
-              className={`navbar-item ${pathname === '/' ? 'is-active' : ''}`}
-              href="/"
-            >
-              Global
-            </motion.a>
-            <motion.a
-              variants={setHeaderItemVariant(0)}
-              initial="hidden"
-              animate="visible"
-              className={`navbar-item ${pathname === '/uscase' ? 'is-active' : ''}`}
-              href="/uscase"
-            >
-              US Domastic
-            </motion.a>
-
+            <Link href="/">
+              <motion.a
+                variants={setHeaderItemVariants(0)}
+                initial="hidden"
+                animate="visible"
+                className={`navbar-item ${pathname === '/' ? 'is-active' : ''}`}
+              >
+                Global
+              </motion.a>
+            </Link>
+            <Link href="/uscase">
+              <motion.a
+                variants={setHeaderItemVariants(0)}
+                initial="hidden"
+                animate="visible"
+                className={`navbar-item ${pathname === '/uscase' ? 'is-active' : ''}`}
+              >
+                US Domastic
+              </motion.a>
+            </Link>
             {/* <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">More</a>
 
@@ -107,7 +137,7 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
 
           <div className="navbar-end">
             <div className="navbar-item">
-              <motion.div variants={setHeaderItemVariant(1)} initial="hidden" animate="visible" className="buttons">
+              <motion.div variants={setHeaderItemVariants(1)} initial="hidden" animate="visible" className="buttons">
                 <motion.a
                   variants={buttonVariants}
                   whileHover="hover"
@@ -121,7 +151,7 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
               </motion.div>
             </div>
             <div className="navbar-item">
-              <motion.div variants={setHeaderItemVariant(2)} initial="hidden" animate="visible" className="buttons">
+              <motion.div variants={setHeaderItemVariants(2)} initial="hidden" animate="visible" className="buttons">
                 <motion.a
                   variants={buttonVariants}
                   whileHover="hover"
@@ -139,10 +169,10 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
       </nav>
       <section className="hero is-warning is-medium">
         <div className="hero-body">
-          <motion.div variants={setHeaderItemVariant(1)} initial="hidden" animate="visible" className="container">
+          <motion.div variants={setHeaderItemVariants(1)} initial="hidden" animate="visible" className="container">
             <h1 className="title">Covid 19 Statistics</h1>
             <h2 className="subtitle">with latest realtime data</h2>
-            <motion.nav variants={setHeaderItemVariant(2)} initial="hidden" animate="visible" className="level">
+            <motion.nav variants={setHeaderItemVariants(1)} initial="hidden" animate="visible" className="level">
               <div className="level-left">
                 <div className="level-item">
                   <h6 className="subtitle is-6">
@@ -150,28 +180,33 @@ export const MyHeader: React.FC<MyHeaderProps> = ({}) => {
                   </h6>
                 </div>
               </div>
-              {pathname != '/uscase' && (
-                <div className="level-right">
-                  <div className="level-item">
-                    <p className="subtitle is-6">
-                      <strong>Want to check more around domastic?</strong>
-                    </p>
-                  </div>
-                  <div className="level-item">
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      className="button is-small is-dark"
-                      onClick={() => (window.location.href = '/uscase')}
-                    >
-                      <span>US Domastic</span>
-                      <span className="icon is-small">
-                        <i className="fas fa-arrow-right"></i>
-                      </span>
-                    </motion.button>
-                  </div>
-                </div>
-              )}
+              <AnimatePresence>
+                {pathname != '/uscase' && (
+                  <motion.div
+                    variants={usDomasticRedirectVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="level-right"
+                  >
+                    <div className="level-item">
+                      <p className="subtitle is-6">
+                        <strong>Want to check more around domastic?</strong>
+                      </p>
+                    </div>
+                    <div className="level-item">
+                      <Link href="/uscase">
+                        <motion.button variants={buttonVariants} whileHover="hover" className="button is-small is-dark">
+                          <span>US Domastic</span>
+                          <span className="icon is-small">
+                            <i className="fas fa-arrow-right"></i>
+                          </span>
+                        </motion.button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.nav>
           </motion.div>
         </div>

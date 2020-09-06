@@ -7,17 +7,17 @@ const MainUsCase = ({ data, onHover, onClick }) => {
   const [pTranslationY, setPTranslationY] = useState(1.35);
   const [pScale, setPScale] = useState(970);
 
-  useEffect(() => {
-    console.log(pScale);
-  }, [pScale]);
+  // useEffect(() => {
+  //   console.log(pScale);
+  // }, [pScale]);
 
-  useEffect(() => {
-    console.log(pTranslationY);
-  }, [pTranslationY]);
+  // useEffect(() => {
+  //   console.log(pTranslationY);
+  // }, [pTranslationY]);
 
-  useEffect(() => {
-    console.log(pTranslationX);
-  }, [pTranslationX]);
+  // useEffect(() => {
+  //   console.log(pTranslationX);
+  // }, [pTranslationX]);
 
   return (
     <>
