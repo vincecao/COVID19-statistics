@@ -470,7 +470,8 @@ export default function Home() {
             <div
               className="column"
               style={{
-                maxWidth: 400,
+                maxWidth: provinceStreamData.length === 8 ? 400 : '100%',
+                transition: 'all 0.4s',
               }}
             >
               <StatisticPieGraph
@@ -498,16 +499,18 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="column">
-              <StatisticStreamGraph
-                streamData={{
-                  data: provinceStreamData,
-                  key: provinceStreamData.length === 0 ? [] : Object.keys(provinceStreamData[0]),
-                  horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
-                }}
-                colorScheme="purple_orange"
-              />
-            </div>
+            {provinceStreamData.length === 8 && (
+              <motion.div variants={setContainerVariants(4)} className="column">
+                <StatisticStreamGraph
+                  streamData={{
+                    data: provinceStreamData,
+                    key: Object.keys(provinceStreamData[0]),
+                    horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
+                  }}
+                  colorScheme="purple_orange"
+                />
+              </motion.div>
+            )}
           </div>
         </Container>
       </section>

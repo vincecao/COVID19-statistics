@@ -7,7 +7,6 @@ export const StatisticPieGraph = ({ pieData }) => {
     <div
       style={{
         width: '100%',
-        maxWidth: 400,
         height: 400,
       }}
     >
