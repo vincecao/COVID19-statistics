@@ -14,6 +14,8 @@ import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGr
 import { Container } from '../components/bulmaComponents/Container';
 import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
 import { Card } from '../components/bulmaComponents/Card';
+import { motion } from 'framer-motion';
+import { FixContainer } from '../components/bulmaComponents/FixContainer';
 
 const moment = require('moment');
 const uniqid = require('uniqid');
@@ -346,22 +348,70 @@ export default function Home() {
     refreshGlobal();
   };
 
+  // framer motion
+  const mainVariant = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: 'beforeChildren',
+        staggerChildren: 1,
+      },
+    },
+  };
+
+  const setContainerVariants = (index: number) => ({
+    hidden: {
+      // opacity: 0,
+      x: '100vw',
+    },
+    visible: {
+      // opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring',
+        mass: 0.4,
+        damping: 8,
+        delay: 0.3 * index,
+      },
+    },
+  });
+
+  const stickyVariants = {
+    hidden: {
+      y: '-50vh',
+    },
+    visible: {
+      y: 0,
+      transition: {
+        type: 'spring',
+        mass: 0.4,
+        damping: 8,
+      },
+    },
+  };
+
   return (
-    <main>
+    <motion.main variants={mainVariant} initial="hidden" animate="visible">
       <MyHeader />
-      <StatisticTopGroup
-        data={countriesList
-          .sort((a, b) => b.value - a.value)
-          .map((country) => ({
-            topValue: country.value,
-            topId: country.name,
-            topOnClick: () => updateSelect(country),
-            ...country,
-          }))}
-        title={`confirmed cases countries in global`}
-        defaultTopNumber={10}
-        colorPattern="GnBu"
-      />
+      <Container variants={setContainerVariants(1)} isVisible={countriesList.length > 0}>
+        <StatisticTopGroup
+          data={countriesList
+            .sort((a, b) => b.value - a.value)
+            .map((country) => ({
+              topValue: country.value,
+              topId: country.name,
+              topOnClick: () => updateSelect(country),
+              ...country,
+            }))}
+          title={`confirmed cases countries in global`}
+          defaultTopNumber={10}
+          colorPattern="GnBu"
+        />
+      </Container>
+
       <section id="sticky-container">
         {globalQuery.status === 'loading' && (
           <>
@@ -379,98 +429,88 @@ export default function Home() {
             )}
           </>
         )}
-        {countriesList.length > 0 && (
-          <>
+
+        <Container
+          variants={setContainerVariants(3)}
+          isVisible={typeof selectCountry.country.name === 'string' && countriesList.length > 0}
+        >
+          <div
+            ref={caseDisplayRef}
+            onScroll={() => {
+              const { offsetTop } = caseDisplayRef.current;
+              console.log(offsetTop);
+            }}
+          >
+            <StatisticGlobalLevelDisplay selectCountry={selectCountry} />
+          </div>
+        </Container>
+
+        <FixContainer
+          // onScroll={() => {
+          //   const { offsetTop } = caseDisplayRef.current;
+          //   console.log(offsetTop);
+          // }}
+          style={{ background: 'white' }}
+          variants={stickyVariants}
+          isVisible={sticky && countriesList.length > 0}
+        >
+          <StatisticGlobalCardDisplay
+            selectCountry={selectCountry}
+            onRefresh={handleRefreshButtonClick}
+            syncing={globalQuery.status === 'loading'}
+          />
+        </FixContainer>
+
+        <Container variants={setContainerVariants(4)} isVisible={countriesList.length > 0}>
+          <div className="columns">
             <div
-              className="mt-5 mb-5 container"
-              ref={caseDisplayRef}
-              onScroll={() => {
-                const { offsetTop } = caseDisplayRef.current;
-                console.log({ caseDisplayRef: offsetTop });
+              className="column"
+              style={{
+                maxWidth: 400,
               }}
             >
-              <StatisticGlobalLevelDisplay selectCountry={selectCountry} />
-              {/* <button className="button is-warning" onClick={handleRefreshButtonClick}>
-                Refresh
-              </button> */}
-            </div>
-            <Container>
-              <div className="columns">
-                <div
-                  className="column"
-                  style={{
-                    maxWidth: 400,
-                  }}
-                >
-                  <StatisticPieGraph
-                    pieData={{
-                      data: [
-                        {
-                          id: 'cases',
-                          label: 'cases',
-                          value: selectCountry.cases.total,
-                          color: 'hsl(178, 70%, 50%)',
-                        },
-                        {
-                          id: 'deaths',
-                          label: 'deaths',
-                          value: selectCountry.death.total,
-                          color: 'hsl(197, 70%, 50%)',
-                        },
-                        // {
-                        //   id: 'tests',
-                        //   label: 'tests',
-                        //   value: selectCountry.tests.total,
-                        //   color: 'hsl(163, 70%, 50%)',
-                        // },
-                      ],
-                    }}
-                  />
-                </div>
-                <div className="column">
-                  <StatisticStreamGraph
-                    streamData={{
-                      data: provinceStreamData,
-                      key: provinceStreamData.length === 0 ? [] : Object.keys(provinceStreamData[0]),
-                      horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
-                    }}
-                    colorScheme="purple_orange"
-                  />
-                </div>
-              </div>
-            </Container>
-            {sticky && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  background: 'white',
-                  zIndex: 10,
+              <StatisticPieGraph
+                pieData={{
+                  data: [
+                    {
+                      id: 'cases',
+                      label: 'cases',
+                      value: selectCountry.cases.total,
+                      color: 'hsl(178, 70%, 50%)',
+                    },
+                    {
+                      id: 'deaths',
+                      label: 'deaths',
+                      value: selectCountry.death.total,
+                      color: 'hsl(197, 70%, 50%)',
+                    },
+                    // {
+                    //   id: 'tests',
+                    //   label: 'tests',
+                    //   value: selectCountry.tests.total,
+                    //   color: 'hsl(163, 70%, 50%)',
+                    // },
+                  ],
                 }}
-              >
-                <StatisticGlobalCardDisplay
-                  selectCountry={selectCountry}
-                  onRefresh={handleRefreshButtonClick}
-                  syncing={globalQuery.status === 'loading'}
-                />
-              </div>
-            )}
-          </>
-        )}
+              />
+            </div>
+            <div className="column">
+              <StatisticStreamGraph
+                streamData={{
+                  data: provinceStreamData,
+                  key: provinceStreamData.length === 0 ? [] : Object.keys(provinceStreamData[0]),
+                  horiTag: `Top 6 confirmed cases with states/provinces of ${selectCountry.country.name} in past n days`,
+                }}
+                colorScheme="purple_orange"
+              />
+            </div>
+          </div>
+        </Container>
       </section>
-      <section>
+
+      <Container variants={setContainerVariants(5)} isVisible={countriesList.length > 0}>
         <MainGlobalCase data={countriesList} onHover={handleMainGlobalCaseHover} onClick={handleMainGlobalCaseClick} />
-      </section>
-      {/* <section>
-        {globalQuery.data.map((country) => (
-          <p></p>
-        ))}
-      </section> */}
-      {/* <section>
-          <MainUsCase data={[]} onClick={() => {}} onHover={() => {}} scale={1070} yValue={1.9} xValue={1.25} />
-        </section> */}
-    </main>
+      </Container>
+    </motion.main>
   );
 }

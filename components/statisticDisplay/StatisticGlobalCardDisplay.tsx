@@ -1,4 +1,6 @@
 import React from 'react';
+import { CardItem } from '../bulmaComponents/StickyDisplayCard/CardItem';
+import { StickyDisplayCard } from '../bulmaComponents/StickyDisplayCard/StickyDisplayCard';
 
 const d3 = require('d3-format');
 
@@ -16,72 +18,63 @@ interface StatisticGlobalCardDisplayProps {
   onRefresh: any;
 }
 
+const setCardItemVariant = (index: number) => ({
+  hidden: {
+    y: '-50vh',
+  },
+  visible: {
+    y: 0,
+    transition: {
+      type: 'spring',
+      mass: 0.4,
+      damping: 10,
+      delay: 0.2 * index,
+    },
+  },
+});
+
 export const StatisticGlobalCardDisplay: React.FC<StatisticGlobalCardDisplayProps> = ({
   selectCountry,
   onRefresh,
   syncing,
 }) => {
   return (
-    <div className="box">
-      <article className="media">
-        <div className="media-left">
-          <figure className="image is-64x64">
-            <img src={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`} alt="Image" />
-          </figure>
-        </div>
-        <div className="media-content">
-          <div className="content">
-            <p>
-              <strong>{selectCountry.country['name']}</strong> <small>{selectCountry.timediff}</small>
-            </p>
-            <div className="field is-grouped is-grouped-multiline">
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-dark">Population</span>
-                  <span className="tag is-light">{d3.format(',.2s')(selectCountry.population)}</span>
-                </div>
-              </div>
+    <StickyDisplayCard
+      areaHeading={selectCountry.country['name']}
+      areaImgSrc={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
+      updateTimeInfo={selectCountry.timediff}
+      key={selectCountry.country['name']}
+      variants={setCardItemVariant(0)}
+    >
+      <CardItem
+        tagIntent="light"
+        tagHeading="Population"
+        tagContent={d3.format(',.2s')(selectCountry.population)}
+        variants={setCardItemVariant(1)}
+      />
 
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-dark">Tests</span>
-                  <span className="tag is-info">{d3.format(',')(selectCountry.tests['total'])}</span>
-                </div>
-              </div>
+      <CardItem
+        tagIntent="info"
+        tagHeading="Tests"
+        tagContent={d3.format(',')(selectCountry.tests['total'])}
+        variants={setCardItemVariant(2)}
+      />
 
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-dark">Cases</span>
-                  <span className="tag is-warning">
-                    {d3.format(',')(selectCountry.cases['total'])}
-                    {selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}
-                  </span>
-                </div>
-              </div>
+      <CardItem
+        tagIntent="warning"
+        tagHeading="Cases"
+        tagContent={`${d3.format(',')(selectCountry.cases['total'])}
+        ${selectCountry.cases['new'] ? `(+${d3.format(',')(selectCountry.cases['new'])})` : ''}`}
+        variants={setCardItemVariant(3)}
+      />
 
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-dark">Death</span>
-                  <span className="tag is-danger">
-                    {d3.format(',')(selectCountry.death['total'])}
-                    {selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}
-                  </span>
-                </div>
-              </div>
-            </div>
-            {/* <small>{selectCountry.country['code-3']}</small>  */}
-          </div>
-          {/* <nav className="level is-mobile">
-            <div className="level-left">
-              <button className="level-item button" aria-label="refresh" onClick={onRefresh}>
-                <span className="icon is-small">
-                  <i className={`fas fa-sync-alt ${syncing ? 'fa-spin' : ''}`} aria-hidden="true"></i>
-                </span>
-              </button>
-            </div>
-          </nav> */}
-        </div>
-      </article>
-    </div>
+      <CardItem
+        tagIntent="danger"
+        tagHeading="Death"
+        tagContent={`${d3.format(',')(selectCountry.death['total'])}
+        ${selectCountry.death['new'] ? `(+${d3.format(',')(selectCountry.death['new'])})` : ''}`}
+        variants={setCardItemVariant(4)}
+      />
+    </StickyDisplayCard>
   );
 };

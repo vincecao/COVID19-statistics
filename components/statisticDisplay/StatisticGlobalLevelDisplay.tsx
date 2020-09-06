@@ -1,4 +1,7 @@
 import React from 'react';
+import { Container } from '../bulmaComponents/Container';
+import { LevelItem } from '../bulmaComponents/Level/LevelItem';
+import { Level } from '../bulmaComponents/Level/Level';
 
 const d3 = require('d3-format');
 
@@ -16,46 +19,25 @@ interface StatisticGlobalLevelDisplayProps {
 
 export const StatisticGlobalLevelDisplay: React.FC<StatisticGlobalLevelDisplayProps> = ({ selectCountry }) => {
   return (
-    <nav className="level">
-      <div className="level-item has-text-centered">
-        <div>
-          <p className="heading">Select Country</p>
-          <h1 className="title is-spaced">{selectCountry.country['name']}</h1>
-          <h6 className="subtitle is-6">
-            <i>{selectCountry.timediff}</i>
-          </h6>
-        </div>
-      </div>
-      <div className="level-item has-text-centered">
-        <div>
-          <p className="heading">Population</p>
-          <h1 className="title is-spaced">{d3.format(',.2s')(selectCountry.population)}</h1>
-        </div>
-      </div>
-      <div className="level-item has-text-centered">
-        <div>
-          <p className="heading">Tests</p>
-          <h1 className="title is-spaced">{d3.format(',')(selectCountry.tests['total'])}</h1>
-        </div>
-      </div>
-      <div className="level-item has-text-centered">
-        <div>
-          <p className="heading">Cases</p>
-          <h1 className="title is-spaced">{d3.format(',')(selectCountry.cases['total'])}</h1>
-          {selectCountry.cases['new'] && (
-            <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.cases['new'])})`}</h2>
-          )}
-        </div>
-      </div>
-      <div className="level-item has-text-centered">
-        <div>
-          <p className="heading">Death</p>
-          <h1 className="title is-spaced">{d3.format(',')(selectCountry.death['total'])}</h1>
-          {selectCountry.death['new'] && (
-            <h2 className="subtitle">{`(+${d3.format(',')(selectCountry.death['new'])})`}</h2>
-          )}
-        </div>
-      </div>
-    </nav>
+    <Level>
+      <LevelItem
+        itemHeading="Select Country"
+        itemTitle={selectCountry.country['name']}
+        itemSubtitle={selectCountry.timediff}
+        isItemSubtitleItalic
+      />
+      <LevelItem itemHeading="Population" itemTitle={d3.format(',.2s')(selectCountry.population)} />
+      <LevelItem itemHeading="Tests" itemTitle={d3.format(',')(selectCountry.tests['total'])} />
+      <LevelItem
+        itemHeading="Cases"
+        itemTitle={d3.format(',')(selectCountry.cases['total'])}
+        itemSubtitle={`(+${d3.format(',')(selectCountry.cases['new'])})`}
+      />
+      <LevelItem
+        itemHeading="Death"
+        itemTitle={d3.format(',')(selectCountry.death['total'])}
+        itemSubtitle={`(+${d3.format(',')(selectCountry.death['new'])})`}
+      />
+    </Level>
   );
 };
