@@ -16,6 +16,7 @@
 * [next.js](https://nextjs.org/)
 * Typescript
 * [react-query](https://react-query.tanstack.com/)
+* [framer-motion](https://www.framer.com/motion/)
 * [bulma](https://bulma.io/)
 * [nivo](https://nivo.rocks/)
 * [rapidapi](https://rapidapi.com/)
