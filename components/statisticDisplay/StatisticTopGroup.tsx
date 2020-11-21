@@ -62,7 +62,6 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
             <motion.p
               whileHover={{
                 scale: 1.1,
-                textShadow: '0px 0px 8px rgb(225,225,225)',
               }}
               whileTap={{
                 scale: 0.9,
@@ -101,7 +100,6 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
           <motion.p
             whileHover={{
               scale: 1.1,
-              textShadow: '0px 0px 8px rgb(225,225,225)',
             }}
             whileTap={{
               scale: 0.9,
@@ -120,7 +118,6 @@ export const StatisticTopGroup: React.FC<StatisticTopGroupProps> = ({
           <motion.p
             whileHover={{
               scale: 1.1,
-              textShadow: '0px 0px 8px rgb(225,225,225)',
             }}
             whileTap={{
               scale: 0.9,

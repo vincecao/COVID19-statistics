@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, queryCache } from 'react-query';
+import { motion, AnimatePresence } from 'framer-motion';
+import moment from 'moment';
+import * as uniqid from 'uniqid';
+import * as iso_countries from 'i18n-iso-countries';
 import MainGlobalCase from '../components/global/mainGlobalCase';
 import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
 import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
@@ -9,16 +13,10 @@ import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGr
 import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGraph';
 import { Container } from '../components/bulmaComponents/Container';
 import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FixContainer } from '../components/bulmaComponents/FixContainer';
-
-const moment = require('moment');
-const uniqid = require('uniqid');
-const axios = require('axios');
+import { getLocationPromise, getStatisticsPromise, getReportPromise } from '../services/utils';
 
 const COUNTRY_LIST = require('../data/country_list.json');
-
-const iso_countries = require('i18n-iso-countries');
 iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
 interface countriesListType {
@@ -66,32 +64,17 @@ const Home = () => {
     country_code: 'USA',
     city: '',
   });
-  // const [syncing, setSyncing] = useState(false);
 
   const [provinceStreamData, setProvinceStreamData] = useState([]);
 
   const caseDisplayRef = useRef(null);
 
-  // useEffect(() => {
-  //   console.log({ currentGuestLocaltion });
-  // }, [currentGuestLocaltion]);
-
-  // useEffect(() => {
-  //   console.log({ selectCountry });
-  // }, [selectCountry]);
-
-  // useEffect(() => {
-  //   console.log(provinceStreamData);
-  // }, [provinceStreamData]);
-
-  // get localGeustLocation
   useEffect(() => {
-    axios
-      .get('https://www.iplocate.io/api/lookup/')
-      .then((response) =>
+    getLocationPromise()
+      .then((data) =>
         setCurrentGuestLocation({
-          ...response.data,
-          country_code: iso_countries.alpha2ToAlpha3(response.data.country_code),
+          ...data,
+          country_code: iso_countries.alpha2ToAlpha3(data.country_code),
         })
       )
       .catch(console.error);
@@ -107,18 +90,7 @@ const Home = () => {
         "longitude": 67.709953
     }
     */
-    // axios
-    //   .get(`https://${__api_host__}/help/countries`, {
-    //     headers: {
-    //       'content-type': 'application/octet-stream',
-    //       'x-rapidapi-host': __api_host__,
-    //       'x-rapidapi-key': __api_key__,
-    //       useQueryString: true,
-    //     },
-    //     params: {
-    //       format: 'json',
-    //     },
-    //   })
+
     return Promise.resolve()
       .then(() => {
         let countryMap = {};
@@ -139,18 +111,10 @@ const Home = () => {
       .then(
         (countryMap) =>
           new Promise((resolve, reject) =>
-            axios
-              .get(`https://${__api_host2__}/statistics`, {
-                headers: {
-                  'content-type': 'application/octet-stream',
-                  'x-rapidapi-host': __api_host2__,
-                  'x-rapidapi-key': __api_key__,
-                  useQueryString: true,
-                },
-              })
-              .then((response) => {
+            getStatisticsPromise()
+              .then((statisticResponse) => {
                 resolve(
-                  response.data.response
+                  statisticResponse
                     .map((statistic) => {
                       if (countryMap[statistic.country]) {
                         return {
@@ -241,7 +205,6 @@ const Home = () => {
 
   const handleMainGlobalCaseClick = (e) => {
     if (countriesList.length > 0) {
-      // console.log(e);
       if (e.data) {
         updateSelect(e.data);
       }
@@ -257,53 +220,21 @@ const Home = () => {
       tests,
       population,
       time: moment(time).format('lll'),
-      timediff: `Updated ${getTimeDiff(time)} minutes ago`, //moment.duration(moment(time).diff(new moment())).asMinutes(),
+      timediff: `Updated ${getTimeDiff(time)} minutes ago`,
     });
   };
 
-  const getDailyConfirmedCasesWithProvince = async (index, country) =>
-    await axios
-      .get(`https://${__api_host3__}/reports`, {
-        headers: {
-          'content-type': 'application/octet-stream',
-          'x-rapidapi-host': __api_host3__,
-          'x-rapidapi-key': __api_key__,
-          useQueryString: true,
-        },
-        params: {
-          iso: country['code-3'],
-          date: moment().subtract(index, 'days').format('YYYY-MM-DD'),
-        },
-      })
-      .then((response) => {
-        /*
-        {
-          "date": "2020-09-03",
-          "confirmed": 991,
-          "deaths": 6,
-          "recovered": 985,
-          "confirmed_diff": 0,
-          "deaths_diff": 0,
-          "recovered_diff": 0,
-          "last_update": "2020-09-04 04:28:26",
-          "active": 0,
-          "active_diff": 0,
-          "fatality_rate": 0.0061,
-          "region": {
-              "iso": "CHN",
-              "name": "China",
-              "province": "Anhui",
-              "lat": "31.8257",
-              "long": "117.2264",
-              "cities": []
-          }
-      },
-      */
+  const getDailyConfirmedCasesWithProvince = async (index = 0, country) =>
+    await getReportPromise({
+      iso: country['code-3'],
+      date: moment().subtract(index, 'days').format('YYYY-MM-DD'),
+    })
+      .then((data) => {
         const reducer = (acc, cur) => ({
           ...acc,
           [cur.province]: cur.confirmed,
         });
-        return response.data.data
+        return data
           .sort((a, b) => b.confirmed - a.confirmed)
           .slice(0, 6)
           .map((p) => ({
@@ -340,10 +271,6 @@ const Home = () => {
   }, [selectCountry.country.name]);
 
   const handleMainGlobalCaseHover = (e) => {
-    let myTooltip = document.createElement('div');
-    // myTooltip.id = 'myToolTip';
-    // myTooltip.innerHTML = '<h1>Hello, world</h1>';
-    // return myTooltip;
     return null;
   };
 
@@ -452,15 +379,7 @@ const Home = () => {
           </div>
         </Container>
 
-        <FixContainer
-          // onScroll={() => {
-          //   const { offsetTop } = caseDisplayRef.current;
-          //   console.log(offsetTop);
-          // }}
-          style={{ background: 'white' }}
-          variants={stickyVariants}
-          isVisible={sticky && countriesList.length > 0}
-        >
+        <FixContainer z={10} variants={stickyVariants} isVisible={sticky && countriesList.length > 0}>
           <StatisticGlobalCardDisplay
             selectCountry={selectCountry}
             onRefresh={handleRefreshButtonClick}
@@ -468,11 +387,7 @@ const Home = () => {
           />
         </FixContainer>
 
-        <FixContainer
-          style={{ background: 'none', zIndex: 11 }}
-          variants={stickyVariants}
-          isVisible={sticky && globalQuery.isFetching}
-        >
+        <FixContainer z={11} variants={stickyVariants} isVisible={sticky && globalQuery.isFetching}>
           <Loading />
         </FixContainer>
 
@@ -504,12 +419,6 @@ const Home = () => {
                       value: selectCountry.death.total,
                       color: 'hsl(197, 70%, 50%)',
                     },
-                    // {
-                    //   id: 'tests',
-                    //   label: 'tests',
-                    //   value: selectCountry.tests.total,
-                    //   color: 'hsl(163, 70%, 50%)',
-                    // },
                   ],
                 }}
               />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
 
 interface StickyDisplayCardProps {
   children: any;
@@ -10,11 +11,15 @@ interface StickyDisplayCardProps {
   variants: {};
 }
 
+const AeraImage = styled(motion.img)`
+  width: auto;
+  height: 64px;
+`;
+
 export const StickyDisplayCard: React.FC<StickyDisplayCardProps> = ({
   areaHeading,
   updateTimeInfo,
   areaImgSrc = '',
-  areaImgStyle = {},
   children,
   variants,
 }) => {
@@ -23,15 +28,7 @@ export const StickyDisplayCard: React.FC<StickyDisplayCardProps> = ({
       <article className="media">
         {areaImgSrc && (
           <div className="media-left">
-            <motion.figure variants={variants} initial="hidden" animate="visible" className="image is-64x64">
-              <img
-                style={{
-                  ...areaImgStyle,
-                }}
-                src={areaImgSrc}
-                alt="Image"
-              />
-            </motion.figure>
+            <AeraImage variants={variants} initial="hidden" animate="visible" src={areaImgSrc} alt="Image" />
           </div>
         )}
         <div className="media-content">
@@ -40,7 +37,6 @@ export const StickyDisplayCard: React.FC<StickyDisplayCardProps> = ({
               <strong>{areaHeading}</strong> <small>{updateTimeInfo}</small>
             </motion.p>
             <div className="field is-grouped is-grouped-multiline">{children}</div>
-            {/* <small>{selectCountry.state.code}</small>  */}
           </div>
         </div>
       </article>

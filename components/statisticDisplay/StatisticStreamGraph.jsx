@@ -1,15 +1,16 @@
 import React from 'react';
 import { ResponsiveStream } from '@nivo/stream';
+import styled from 'styled-components';
+
+const StreamGraphContainer = styled.div`
+  width: 100%;
+  height: 400px;
+`;
 
 export const StatisticStreamGraph = ({ streamData, colorScheme }) => {
   const { data = [], key = [], horiTag = '' } = streamData;
   return (
-    <div
-      style={{
-        width: '100%',
-        height: 400,
-      }}
-    >
+    <StreamGraphContainer>
       <ResponsiveStream
         data={data}
         keys={key}
@@ -94,6 +95,6 @@ export const StatisticStreamGraph = ({ streamData, colorScheme }) => {
           },
         ]}
       />
-    </div>
+    </StreamGraphContainer>
   );
 };

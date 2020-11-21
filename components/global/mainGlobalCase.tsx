@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import GlobalMap from './globalMap';
+import styled from 'styled-components';
+
+const MainGlobalCaseContainer = styled.div`
+  overflow-y: hidden;
+  overflow-x: auto;
+`;
 
 const MainGlobalCase = ({ data, onHover, onClick }) => {
   const [pTranslationX, setPTranslationX] = useState(0.5);
@@ -21,12 +27,7 @@ const MainGlobalCase = ({ data, onHover, onClick }) => {
 
   return (
     <>
-      <div
-        style={{
-          overflowY: 'hidden',
-          overflowX: 'auto',
-        }}
-      >
+      <MainGlobalCaseContainer>
         <GlobalMap
           data={data}
           onHover={onHover}
@@ -35,7 +36,7 @@ const MainGlobalCase = ({ data, onHover, onClick }) => {
           pTranslationX={pTranslationX}
           pTranslationY={pTranslationY}
         />
-      </div>
+      </MainGlobalCaseContainer>
       {false && ( // debug use to adjust map
         <section>
           <div>

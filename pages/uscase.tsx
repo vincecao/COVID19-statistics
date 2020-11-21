@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, queryCache } from 'react-query';
-import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
+import { motion } from 'framer-motion';
+import moment from 'moment';
+import * as uniqid from 'uniqid';
+import * as iso_countries from 'i18n-iso-countries';
 import MainUsCase from '../components/usdomastic/mainUsCase';
 import { getState, convertRegion } from '../components/helperLib/help';
 import { StatisticDomasticCardDisplay } from '../components/statisticDisplay/StatisticDomasticCardDisplay';
@@ -8,17 +11,12 @@ import { StatisticDomasticLevelDisplay } from '../components/statisticDisplay/St
 import Loading from '../components/basic/Loading';
 import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
 import { Container } from '../components/bulmaComponents/Container';
-import { motion } from 'framer-motion';
 import { FixContainer } from '../components/bulmaComponents/FixContainer';
+import { getLocationPromise, getReportPromise } from '../services/utils';
 
 const TO_NAME = 1;
 const TO_ABBREVIATED = 2;
 
-const moment = require('moment');
-const uniqid = require('uniqid');
-const axios = require('axios');
-
-const iso_countries = require('i18n-iso-countries');
 iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
 const Uscase = () => {
@@ -67,37 +65,24 @@ const Uscase = () => {
 
   // get localGeustLocation
   useEffect(() => {
-    axios
-      .get('https://www.iplocate.io/api/lookup/')
-      .then((response) =>
+    getLocationPromise()
+      .then((data) =>
         setCurrentGuestLocation({
-          ...response.data,
-          country_code: iso_countries.alpha2ToAlpha3(response.data.country_code),
-          state: convertRegion(getState(response.data.postal_code), TO_NAME),
+          ...data,
+          country_code: iso_countries.alpha2ToAlpha3(data.country_code),
+          state: convertRegion(getState(data.postal_code), TO_NAME),
         })
       )
       .catch(console.error);
   }, []);
 
   const getDomasticStatistic = () => {
-    return axios
-      .get(`https://${__api_host3__}/reports`, {
-        headers: {
-          'content-type': 'application/octet-stream',
-          'x-rapidapi-host': __api_host3__,
-          'x-rapidapi-key': __api_key__,
-          useQueryString: true,
-        },
-        params: {
-          iso: 'USA',
-          region_name: 'US',
-          // city_name: 'Autauga',
-          // date: '2020-04-16',
-          // q: 'US Alabama',
-        },
-      })
-      .then((response: { data: { data: [] } }) => {
-        return response.data.data
+    return getReportPromise({
+      iso: 'USA',
+      region_name: 'US',
+    })
+      .then((data) => {
+        return data
           .map((stateData: any) => ({
             id: stateData.region.province,
             value: stateData.confirmed,
@@ -135,7 +120,7 @@ const Uscase = () => {
 
   // react-query Queries
   const domasticQuery = useQuery('domastic', getDomasticStatistic, {
-    onSuccess: (data: []) => {
+    onSuccess: (data = []) => {
       setStateList(data);
       if (data.length > 0) {
         updateSelect(
@@ -180,7 +165,6 @@ const Uscase = () => {
 
   const handleMainDomasticCaseClick = (e) => {
     if (stateList.length > 0) {
-      // console.log(e);
       if (e.data) {
         updateSelect(e.data);
       }
@@ -320,24 +304,6 @@ const Uscase = () => {
           selectedNameId={selectCityName}
         />
       </Container>
-      {/* <div className="level">
-        <div className="level-item">
-          <AutoComplete
-            name="city"
-            label="City"
-            placeholder="Choose a city"
-            data={selectState.cities.map((c) => c.name)}
-          />
-        </div>
-        <div className="level-item">
-          <AutoComplete
-            name="state"
-            label="State"
-            placeholder="Choose a state"
-            data={stateList.map((s) => s.id)}
-          />
-        </div>
-      </div> */}
 
       <section id="sticky-container">
         <Container
@@ -355,23 +321,11 @@ const Uscase = () => {
             <StatisticDomasticLevelDisplay selectState={selectState} />
           </div>
         </Container>
-        <FixContainer
-          // onScroll={() => {
-          //   const { offsetTop } = caseDisplayRef.current;
-          //   console.log(offsetTop);
-          // }}
-          style={{ background: 'white' }}
-          variants={stickyVariants}
-          isVisible={sticky && stateList.length > 0}
-        >
+        <FixContainer z={10} variants={stickyVariants} isVisible={sticky && stateList.length > 0}>
           <StatisticDomasticCardDisplay selectState={selectState} />
         </FixContainer>
 
-        <FixContainer
-          style={{ background: 'none', zIndex: 11 }}
-          variants={stickyVariants}
-          isVisible={sticky && domasticQuery.isFetching}
-        >
+        <FixContainer z={11} variants={stickyVariants} isVisible={sticky && domasticQuery.isFetching}>
           <Loading />
         </FixContainer>
       </section>

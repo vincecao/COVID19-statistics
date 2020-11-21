@@ -1,9 +1,16 @@
 import React from 'react';
 import { ResponsiveChoropleth } from '@nivo/geo';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 const globalCase = require('../../data/globalCase.json');
 const world_countries = require('../../data/world_countries.json');
+
+const GlobalMapContainer = styled.div`
+  width: 1300px;
+  height: 1000px;
+  cursor: pointer;
+`;
 
 const GlobalMap = ({
   pScale,
@@ -14,13 +21,7 @@ const GlobalMap = ({
   pTranslationY,
 }) => {
   return (
-    <div
-      style={{
-        height: 1000,
-        width: 1300,
-        cursor: 'pointer',
-      }}
-    >
+    <GlobalMapContainer>
       <ResponsiveChoropleth
         data={data}
         features={world_countries.features}
@@ -38,35 +39,9 @@ const GlobalMap = ({
         graticuleLineColor="#dddddd"
         borderWidth={0.2}
         borderColor="#152538"
-        //tooltip={onHover}
         onClick={onClick}
-        /*legends={[
-          {
-            anchor: 'top-left',
-            direction: 'column',
-            justify: true,
-            translateX: 20,
-            translateY: 15,
-            itemsSpacing: 0,
-            itemWidth: 94,
-            itemHeight: 18,
-            itemDirection: 'left-to-right',
-            itemTextColor: '#444444',
-            itemOpacity: 0.85,
-            symbolSize: 10,
-            effects: [
-              {
-                on: 'hover',
-                style: {
-                  itemTextColor: '#000000',
-                  itemOpacity: 1,
-                },
-              },
-            ],
-          },
-        ]}*/
       />
-    </div>
+    </GlobalMapContainer>
   );
 };
 

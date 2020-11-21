@@ -1,8 +1,7 @@
 import React from 'react';
+import * as d3 from 'd3-format';
 import { CardItem } from '../bulmaComponents/StickyDisplayCard/CardItem';
 import { StickyDisplayCard } from '../bulmaComponents/StickyDisplayCard/StickyDisplayCard';
-
-const d3 = require('d3-format');
 
 interface StatisticDomasticCardDisplayProps {
   selectState: {
@@ -40,7 +39,6 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
       areaImgSrc={
         selectState.state.code ? `http://flags.ox3.in/svg/us/${selectState.state.code.toLowerCase()}.svg` : ''
       }
-      areaImgStyle={{ marginTop: 15 }}
       updateTimeInfo={selectState.timediff}
       key={selectState.state['name']}
       variants={setCardItemVariants(0)}
@@ -75,14 +73,6 @@ export const StatisticDomasticCardDisplay: React.FC<StatisticDomasticCardDisplay
               ${selectState.death['new'] ? `(+${d3.format(',')(selectState.death['new'])})` : ''}`}
         variants={setCardItemVariants(4)}
       />
-
-      {/* <CardItem
-          tagIntent="info"
-          tagHeading="Recovered"
-          tagContent={`${d3.format(',')(selectState.recovered['total'])}
-        ${selectState.recovered['new'] ? `(+${d3.format(',')(selectState.recovered['new'])})` : ''}`}
-        variants={setCardItemVariant(5)}
-        /> */}
     </StickyDisplayCard>
   );
 };

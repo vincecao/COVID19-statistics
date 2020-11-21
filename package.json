@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start-local": "node server && next start",
     "dev": "node server",
     "build": "next build",
     "start": "next start"
@@ -26,6 +27,7 @@
     "react-query": "^2.12.1",
     "react-query-devtools": "^2.4.4",
     "react-resize-detector": "^5.0.7",
+    "styled-components": "^5.2.1",
     "uniqid": "^5.2.0"
   },
   "devDependencies": {

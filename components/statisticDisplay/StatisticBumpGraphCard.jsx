@@ -1,16 +1,17 @@
 import React from 'react';
 import { ResponsiveBump } from '@nivo/bump';
+import styled from 'styled-components';
+
+const GraphCard = styled.div`
+  width: 100%;
+  height: 600px;
+`;
 
 export const StatisticBumpGraphCard = ({ bumpData }) => {
   const { data = [], verticalTag = '', horiTag = '' } = bumpData;
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: 600,
-      }}
-    >
+    <GraphCard>
       <ResponsiveBump
         data={data}
         margin={{ top: 40, right: 100, bottom: 40, left: 60 }}
@@ -52,6 +53,6 @@ export const StatisticBumpGraphCard = ({ bumpData }) => {
           legendOffset: -40,
         }}
       />
-    </div>
+    </GraphCard>
   );
 };

@@ -1,8 +1,7 @@
 import React from 'react';
+import * as d3 from 'd3-format';
 import { CardItem } from '../bulmaComponents/StickyDisplayCard/CardItem';
 import { StickyDisplayCard } from '../bulmaComponents/StickyDisplayCard/StickyDisplayCard';
-
-const d3 = require('d3-format');
 
 interface StatisticGlobalCardDisplayProps {
   selectCountry: {

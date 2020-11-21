@@ -146,7 +146,7 @@ export const MyHeader: React.FC<MyHeaderProps> = ({ route }) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <strong>Lean COVID-19 on WHO</strong>
+                  <strong>Learn COVID-19 on WHO</strong>
                 </motion.a>
               </motion.div>
             </div>
