@@ -1,6 +1,6 @@
 # COVID19-statistics
 
-[covid-19-statistics](https://covid-19-statistics.vercel.app/)
+[covid-19-statistics](//covid-19-statistics.vercel.app/)
 
 #### Desktop
 
@@ -13,18 +13,18 @@
 
 ## Stack:
 
-* [next.js](https://nextjs.org/)
-* Typescript
-* [react-query](https://react-query.tanstack.com/)
-* [framer-motion](https://www.framer.com/motion/)
-* [bulma](https://bulma.io/)
-* [nivo](https://nivo.rocks/)
-* [rapidapi](https://rapidapi.com/)
-* [vercel](vercel.com)
+- [next.js](//nextjs.org/)
+- Typescript
+- [react-query](//react-query.tanstack.com/)
+- [framer-motion](//www.framer.com/motion/)
+- [bulma](//bulma.io/)
+- [nivo](//nivo.rocks/)
+- [rapidapi](//rapidapi.com/)
+- [vercel](//vercel.com)
 
 ## Deploy
 
-``` js
+```js
 /* Config env, add .env file with following three environment
  - API_KEY
  - COVID_API_HOST: covid-19-data.p.rapidapi.com
@@ -41,5 +41,5 @@ yarn dev
 
 ## Features
 
-* Always syncing with latest covid19 statistic with countries and its provinces
-* Global and US domastic wide
+- Always syncing with latest covid19 statistic with countries and its provinces
+- Global and US domestic wide

@@ -1,18 +1,25 @@
 import React from 'react';
 import { ResponsiveChoropleth } from '@nivo/geo';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import * as globalCase from '@data/globalCase.json';
+import * as world_countries from '@data/world_countries.json';
 
-const globalCase = require('../../data/globalCase.json');
-const world_countries = require('../../data/world_countries.json');
-
-const GlobalMapContainer = styled.div`
+const MapGlobalContainer = styled.div`
   width: 1300px;
   height: 1000px;
   cursor: pointer;
 `;
 
-const GlobalMap = ({
+interface MapGlobalProps {
+  pScale: number;
+  data?: [];
+  onHover?: () => {};
+  onClick?: () => {};
+  pTranslationX: number;
+  pTranslationY: number;
+}
+
+export const MapGlobal: React.FC<MapGlobalProps> = ({
   pScale,
   data = globalCase,
   onHover = () => {},
@@ -21,7 +28,7 @@ const GlobalMap = ({
   pTranslationY,
 }) => {
   return (
-    <GlobalMapContainer>
+    <MapGlobalContainer>
       <ResponsiveChoropleth
         data={data}
         features={world_countries.features}
@@ -35,16 +42,13 @@ const GlobalMap = ({
         projectionRotation={[0, 0, 0]}
         projectionScale={pScale}
         enableGraticule={false}
-        fill
         graticuleLineColor="#dddddd"
         borderWidth={0.2}
         borderColor="#152538"
         onClick={onClick}
       />
-    </GlobalMapContainer>
+    </MapGlobalContainer>
   );
 };
 
-GlobalMap.propTypes = {};
-
-export default GlobalMap;
+export default MapGlobal;

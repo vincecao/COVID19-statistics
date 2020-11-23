@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import * as d3 from 'd3-format';
+import * as d3_c from 'd3-scale-chromatic';
 import { motion } from 'framer-motion';
-const d3 = require('d3-format');
-const d3_c = require('d3-scale-chromatic');
-// const uniqid = require('uniqid');
 
 interface StatisticTopGroupProps {
   title: string;

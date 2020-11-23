@@ -1,13 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-const Loading = ({ style = {} }) => {
+interface LoadingProps {}
+
+const Loading: React.FC<LoadingProps> = () => {
   return (
-    <div>
+    <div className="has-background-white">
       <progress className="progress is-small is-warning" max="100">
         15%
       </progress>
-      <div className="level my-5">
+      <div className="level mt-3">
         <div className="level-item has-text-centered">
           <p className="heading">Loading...</p>
         </div>
@@ -15,7 +16,5 @@ const Loading = ({ style = {} }) => {
     </div>
   );
 };
-
-Loading.propTypes = {};
 
 export default Loading;

@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import UsMap from './usMap';
+import React, { useState } from 'react';
+import MapGlobal from './mapGlobal';
+import styled from 'styled-components';
 
-const MainUsCase = ({ data, onHover, onClick }) => {
-  const [pTranslationX, setPTranslationX] = useState(1.8);
-  const [pTranslationY, setPTranslationY] = useState(1.35);
-  const [pScale, setPScale] = useState(970);
+const MainGlobalCaseContainer = styled.div`
+  overflow-y: hidden;
+  overflow-x: auto;
+`;
+
+const MainGlobalCase = ({ data, onHover, onClick }) => {
+  const [pTranslationX, setPTranslationX] = useState(0.5);
+  const [pTranslationY, setPTranslationY] = useState(0.55);
+  const [pScale, setPScale] = useState(240);
 
   // useEffect(() => {
   //   console.log(pScale);
@@ -21,14 +26,8 @@ const MainUsCase = ({ data, onHover, onClick }) => {
 
   return (
     <>
-      <div
-        style={{
-          overflowY: 'hidden',
-          overflowX: 'auto',
-        }}
-      >
-        <UsMap
-          projectionScale={500}
+      <MainGlobalCaseContainer>
+        <MapGlobal
           data={data}
           onHover={onHover}
           onClick={onClick}
@@ -36,7 +35,7 @@ const MainUsCase = ({ data, onHover, onClick }) => {
           pTranslationX={pTranslationX}
           pTranslationY={pTranslationY}
         />
-      </div>
+      </MainGlobalCaseContainer>
       {false && ( // debug use to adjust map
         <section>
           <div>
@@ -81,6 +80,6 @@ const MainUsCase = ({ data, onHover, onClick }) => {
   );
 };
 
-MainUsCase.propTypes = {};
+MainGlobalCase.propTypes = {};
 
-export default MainUsCase;
+export default MainGlobalCase;

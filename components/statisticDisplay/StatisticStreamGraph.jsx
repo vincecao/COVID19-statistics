@@ -7,6 +7,63 @@ const StreamGraphContainer = styled.div`
   height: 400px;
 `;
 
+const defs = [
+  {
+    id: 'dots',
+    type: 'patternDots',
+    background: 'inherit',
+    color: '#2c998f',
+    size: 4,
+    padding: 2,
+    stagger: true,
+  },
+  {
+    id: 'squares',
+    type: 'patternSquares',
+    background: 'inherit',
+    color: '#e4c912',
+    size: 6,
+    padding: 2,
+    stagger: true,
+  },
+];
+
+const fill = [
+  // {
+  //   match: {
+  //     id: 'Paul',
+  //   },
+  //   id: 'dots',
+  // },
+  // {
+  //   match: {
+  //     id: 'Marcel',
+  //   },
+  //   id: 'squares',
+  // },
+];
+
+const legends = [
+  {
+    anchor: 'bottom-right',
+    direction: 'column',
+    translateX: 100,
+    itemWidth: 80,
+    itemHeight: 20,
+    itemTextColor: '#999999',
+    symbolSize: 12,
+    symbolShape: 'circle',
+    effects: [
+      {
+        on: 'hover',
+        style: {
+          itemTextColor: '#000000',
+        },
+      },
+    ],
+  },
+];
+
 export const StatisticStreamGraph = ({ streamData, colorScheme }) => {
   const { data = [], key = [], horiTag = '' } = streamData;
   return (
@@ -31,42 +88,8 @@ export const StatisticStreamGraph = ({ streamData, colorScheme }) => {
         colors={{ scheme: colorScheme }}
         fillOpacity={0.85}
         borderColor={{ theme: 'background' }}
-        defs={[
-          {
-            id: 'dots',
-            type: 'patternDots',
-            background: 'inherit',
-            color: '#2c998f',
-            size: 4,
-            padding: 2,
-            stagger: true,
-          },
-          {
-            id: 'squares',
-            type: 'patternSquares',
-            background: 'inherit',
-            color: '#e4c912',
-            size: 6,
-            padding: 2,
-            stagger: true,
-          },
-        ]}
-        fill={
-          [
-            // {
-            //   match: {
-            //     id: 'Paul',
-            //   },
-            //   id: 'dots',
-            // },
-            // {
-            //   match: {
-            //     id: 'Marcel',
-            //   },
-            //   id: 'squares',
-            // },
-          ]
-        }
+        defs={defs}
+        fill={fill}
         dotSize={8}
         dotColor={{ from: 'color' }}
         dotBorderWidth={2}
@@ -74,26 +97,7 @@ export const StatisticStreamGraph = ({ streamData, colorScheme }) => {
         animate={false}
         motionStiffness={90}
         motionDamping={15}
-        legends={[
-          {
-            anchor: 'bottom-right',
-            direction: 'column',
-            translateX: 100,
-            itemWidth: 80,
-            itemHeight: 20,
-            itemTextColor: '#999999',
-            symbolSize: 12,
-            symbolShape: 'circle',
-            effects: [
-              {
-                on: 'hover',
-                style: {
-                  itemTextColor: '#000000',
-                },
-              },
-            ],
-          },
-        ]}
+        legends={legends}
       />
     </StreamGraphContainer>
   );

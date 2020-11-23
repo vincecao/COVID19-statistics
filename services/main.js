@@ -2,11 +2,11 @@ import axios from 'axios';
 import { __api_host__, __api_host2__, __api_host3__, __api_key__ } from '../data/const';
 
 export const getLocationPromise = () =>
-  axios.get('https://www.iplocate.io/api/lookup/').then((response) => response.data);
+  axios.get('//www.iplocate.io/api/lookup/').then((response) => response.data);
 
 export const getStatisticsPromise = () =>
   axios
-    .get(`https://${__api_host2__}/statistics`, {
+    .get(`//${__api_host2__}/statistics`, {
       headers: {
         'content-type': 'application/octet-stream',
         'x-rapidapi-host': __api_host2__,
@@ -42,7 +42,7 @@ export const getStatisticsPromise = () =>
 
 export const getReportPromise = ({ iso = undefined, date = undefined, region_name = undefined }) =>
   axios
-    .get(`https://${__api_host3__}/reports`, {
+    .get(`//${__api_host3__}/reports`, {
       headers: {
         'content-type': 'application/octet-stream',
         'x-rapidapi-host': __api_host3__,

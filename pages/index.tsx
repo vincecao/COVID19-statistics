@@ -4,19 +4,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 import * as uniqid from 'uniqid';
 import * as iso_countries from 'i18n-iso-countries';
-import MainGlobalCase from '../components/global/mainGlobalCase';
-import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '../data/const';
-import { StatisticGlobalCardDisplay } from '../components/statisticDisplay/StatisticGlobalCardDisplay';
-import { StatisticGlobalLevelDisplay } from '../components/statisticDisplay/StatisticGlobalLevelDisplay';
-import Loading from '../components/basic/Loading';
-import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
-import { StatisticPieGraph } from '../components/statisticDisplay/StatisticPieGraph';
-import { Container } from '../components/bulmaComponents/Container';
-import { StatisticStreamGraph } from '../components/statisticDisplay/StatisticStreamGraph';
-import { FixContainer } from '../components/bulmaComponents/FixContainer';
-import { getLocationPromise, getStatisticsPromise, getReportPromise } from '../services/utils';
+import MainGlobalCase from '@components/pages-comp/global/mainGlobalCase';
+import { __api_host__, __api_host2__, __api_key__, __api_host3__ } from '@data/const';
+import { StatisticGlobalCardDisplay } from '@components/statisticDisplay/StatisticGlobalCardDisplay';
+import { StatisticGlobalLevelDisplay } from '@components/statisticDisplay/StatisticGlobalLevelDisplay';
+import Loading from '@components/basic/Loading';
+import { StatisticTopGroup } from '@components/statisticDisplay/StatisticTopGroup';
+import { StatisticPieGraph } from '@components/statisticDisplay/StatisticPieGraph';
+import { Container } from '@components/bulmaComponents/Container';
+import { StatisticStreamGraph } from '@components/statisticDisplay/StatisticStreamGraph';
+import { FixContainer } from '@components/bulmaComponents/FixContainer';
+import { getLocationPromise, getStatisticsPromise, getReportPromise } from '@services/main';
+import { mainVariants, containerVariants, stickyVariants } from '@variants/data';
 
-const COUNTRY_LIST = require('../data/country_list.json');
+const COUNTRY_LIST = require('@data/country_list.json');
 iso_countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
 interface countriesListType {
@@ -105,7 +106,6 @@ const Home = () => {
           };
           return null;
         });
-        console.log({ countryMap });
         return countryMap;
       })
       .then(
@@ -148,7 +148,7 @@ const Home = () => {
         return data;
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 
@@ -243,10 +243,6 @@ const Home = () => {
           }))
           .reduce(reducer, {});
       })
-      .then((newProvinceStreamData = {}) => {
-        console.log(newProvinceStreamData);
-        return newProvinceStreamData;
-      })
       .catch((err) => {
         console.error(err);
         return {};
@@ -278,74 +274,10 @@ const Home = () => {
     refreshGlobal();
   };
 
-  // framer motion
-  const mainVariants = {
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: 'beforeChildren',
-        staggerChildren: 0.1,
-      },
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        staggerChildren: 0.1,
-        // ease: 'easeInOut',
-        // duration: 0.7,
-      },
-    },
-  };
-
-  const setContainerVariants = (index: number) => ({
-    hidden: {
-      opacity: 0,
-      x: '100vw',
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: 'spring',
-        mass: 0.4,
-        damping: 8,
-        delay: 0.2 * index,
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: 10,
-      transition: {
-        ease: 'easeInOut',
-      },
-    },
-  });
-
-  const stickyVariants = {
-    hidden: {
-      y: '-50vh',
-    },
-    visible: {
-      y: 0,
-      transition: {
-        type: 'tween',
-      },
-    },
-    exit: {
-      y: '-50vh',
-      transition: {
-        ease: 'easeInOut',
-      },
-    },
-  };
-
   return (
     <motion.main variants={mainVariants} initial="hidden" animate="visible" exit="exit">
       {globalQuery.isFetching && <Loading />}
-      <Container variants={setContainerVariants(1)} isVisible={countriesList.length > 0}>
+      <Container variants={containerVariants(1)} isVisible={countriesList.length > 0}>
         <StatisticTopGroup
           data={countriesList
             .sort((a, b) => b.value - a.value)
@@ -365,14 +297,13 @@ const Home = () => {
       <section id="sticky-container">
         <Container
           animatekey={`level-data-${selectCountry.country.name}`}
-          variants={setContainerVariants(3)}
+          variants={containerVariants(3)}
           isVisible={typeof selectCountry.country.name === 'string' && countriesList.length > 0}
         >
           <div
             ref={caseDisplayRef}
             onScroll={() => {
               const { offsetTop } = caseDisplayRef.current;
-              console.log(offsetTop);
             }}
           >
             <StatisticGlobalLevelDisplay selectCountry={selectCountry} />
@@ -393,7 +324,7 @@ const Home = () => {
 
         <Container
           animatekey={`graph-data-${selectCountry.country.name}`}
-          variants={setContainerVariants(4)}
+          variants={containerVariants(4)}
           isVisible={countriesList.length > 0}
         >
           <div className="columns">
@@ -426,7 +357,7 @@ const Home = () => {
             {provinceStreamData.length > 0 && (
               <AnimatePresence>
                 <motion.div
-                  variants={setContainerVariants(4)}
+                  variants={containerVariants(4)}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -447,14 +378,14 @@ const Home = () => {
         </Container>
       </section>
 
-      <Container variants={setContainerVariants(5)} isVisible={countriesList.length > 0}>
+      <Container variants={containerVariants(5)} isVisible={countriesList.length > 0}>
         <MainGlobalCase data={countriesList} onHover={handleMainGlobalCaseHover} onClick={handleMainGlobalCaseClick} />
       </Container>
     </motion.main>
   );
 };
 
-Home.getInitialProps = ({}) => {
+Home.getInitialProps = () => {
   return {};
 };
 

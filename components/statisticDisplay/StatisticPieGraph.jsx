@@ -7,17 +7,78 @@ const PieGraphContainer = styled.div`
   height: 400px;
 `;
 
+const defs = [
+  {
+    id: 'dots',
+    type: 'patternDots',
+    background: 'inherit',
+    color: 'rgba(255, 255, 255, 0.3)',
+    size: 4,
+    padding: 1,
+    stagger: true,
+  },
+  {
+    id: 'lines',
+    type: 'patternLines',
+    background: 'inherit',
+    color: 'rgba(255, 255, 255, 0.3)',
+    rotation: -45,
+    lineWidth: 6,
+    spacing: 10,
+  },
+];
+
+const fill = [
+  {
+    match: {
+      id: 'cases',
+    },
+    id: 'dots',
+  },
+  {
+    match: {
+      id: 'deaths',
+    },
+    id: 'lines',
+  },
+];
+
+const legends = [
+  {
+    anchor: 'bottom',
+    direction: 'row',
+    translateY: 56,
+    itemWidth: 100,
+    itemHeight: 18,
+    itemTextColor: '#999',
+    symbolSize: 18,
+    symbolShape: 'circle',
+    effects: [
+      {
+        on: 'hover',
+        style: {
+          itemTextColor: '#000',
+        },
+      },
+    ],
+  },
+];
+
+const colors = { scheme: 'nivo' };
+
+const margin = { top: 40, right: 80, bottom: 80, left: 80 };
+
 export const StatisticPieGraph = ({ pieData }) => {
   const { data = [] } = pieData;
   return (
     <PieGraphContainer>
       <ResponsivePie
         data={data}
-        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+        margin={margin}
         innerRadius={0.5}
         padAngle={0.7}
         cornerRadius={3}
-        colors={{ scheme: 'nivo' }}
+        colors={colors}
         borderWidth={1}
         borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         radialLabelsSkipAngle={10}
@@ -28,65 +89,11 @@ export const StatisticPieGraph = ({ pieData }) => {
         radialLabelsLinkHorizontalLength={24}
         radialLabelsLinkStrokeWidth={1}
         radialLabelsLinkColor={{ from: 'color' }}
-        slicesLabelsSkipAngle={10}
-        slicesLabelsTextColor="#333333"
-        animate={true}
-        motionStiffness={90}
-        motionDamping={15}
-        defs={[
-          {
-            id: 'dots',
-            type: 'patternDots',
-            background: 'inherit',
-            color: 'rgba(255, 255, 255, 0.3)',
-            size: 4,
-            padding: 1,
-            stagger: true,
-          },
-          {
-            id: 'lines',
-            type: 'patternLines',
-            background: 'inherit',
-            color: 'rgba(255, 255, 255, 0.3)',
-            rotation: -45,
-            lineWidth: 6,
-            spacing: 10,
-          },
-        ]}
-        fill={[
-          {
-            match: {
-              id: 'cases',
-            },
-            id: 'dots',
-          },
-          {
-            match: {
-              id: 'deaths',
-            },
-            id: 'lines',
-          },
-        ]}
-        legends={[
-          {
-            anchor: 'bottom',
-            direction: 'row',
-            translateY: 56,
-            itemWidth: 100,
-            itemHeight: 18,
-            itemTextColor: '#999',
-            symbolSize: 18,
-            symbolShape: 'circle',
-            effects: [
-              {
-                on: 'hover',
-                style: {
-                  itemTextColor: '#000',
-                },
-              },
-            ],
-          },
-        ]}
+        sliceLabelsSkipAngle={10}
+        sliceLabelsTextColor="#333333"
+        defs={defs}
+        fill={fill}
+        legends={legends}
       />
     </PieGraphContainer>
   );

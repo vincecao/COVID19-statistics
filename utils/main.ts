@@ -1,9 +1,3 @@
-/*
-helper reference:
-- https://stackoverflow.com/questions/28821804/how-can-i-quickly-determine-the-state-for-a-given-zipcode
-- https://gist.github.com/calebgrove/c285a9510948b633aa47
-*/
-
 export const getState = (zipString) => {
   /* Ensure param is a string to prevent unpredictable parsing results */
   if (typeof zipString !== 'string') {
@@ -193,7 +187,7 @@ const TO_NAME = 1;
 const TO_ABBREVIATED = 2;
 
 export const convertRegion = (input, to) => {
-  var states = [
+  const states = [
     ['Alabama', 'AL'],
     ['Alaska', 'AK'],
     ['American Samoa', 'AS'],
@@ -257,7 +251,7 @@ export const convertRegion = (input, to) => {
   ];
 
   // So happy that Canada and the US have distinct abbreviations
-  var provinces = [
+  const provinces = [
     ['Alberta', 'AB'],
     ['British Columbia', 'BC'],
     ['Manitoba', 'MB'],
@@ -273,7 +267,7 @@ export const convertRegion = (input, to) => {
     ['Yukon', 'YT'],
   ];
 
-  var regions = states.concat(provinces);
+  const regions = states.concat(provinces);
 
   var i; // Reusable loop variable
   if (to == TO_ABBREVIATED) {

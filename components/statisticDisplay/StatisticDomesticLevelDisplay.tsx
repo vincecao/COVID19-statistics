@@ -1,11 +1,9 @@
 import React from 'react';
-import { Container } from '../bulmaComponents/Container';
+import * as d3 from 'd3-format';
 import { Level } from '../bulmaComponents/Level/Level';
 import { LevelItem } from '../bulmaComponents/Level/LevelItem';
 
-const d3 = require('d3-format');
-
-interface StatisticDomasticLevelDisplayProps {
+interface StatisticDomesticLevelDisplayProps {
   selectState: {
     state: { name: string; code: string };
     cases: {};
@@ -19,7 +17,7 @@ interface StatisticDomasticLevelDisplayProps {
   };
 }
 
-export const StatisticDomasticLevelDisplay: React.FC<StatisticDomasticLevelDisplayProps> = ({ selectState }) => {
+const StatisticDomesticLevelDisplay: React.FC<StatisticDomesticLevelDisplayProps> = ({ selectState }) => {
   return (
     <Level bottomText="Source: Johns Hopkins CSSE">
       <LevelItem
@@ -53,3 +51,5 @@ export const StatisticDomasticLevelDisplay: React.FC<StatisticDomasticLevelDispl
     </Level>
   );
 };
+
+export default StatisticDomesticLevelDisplay;

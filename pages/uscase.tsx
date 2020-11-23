@@ -4,15 +4,16 @@ import { motion } from 'framer-motion';
 import moment from 'moment';
 import * as uniqid from 'uniqid';
 import * as iso_countries from 'i18n-iso-countries';
-import MainUsCase from '../components/usdomastic/mainUsCase';
-import { getState, convertRegion } from '../components/helperLib/help';
-import { StatisticDomasticCardDisplay } from '../components/statisticDisplay/StatisticDomasticCardDisplay';
-import { StatisticDomasticLevelDisplay } from '../components/statisticDisplay/StatisticDomasticLevelDisplay';
-import Loading from '../components/basic/Loading';
-import { StatisticTopGroup } from '../components/statisticDisplay/StatisticTopGroup';
-import { Container } from '../components/bulmaComponents/Container';
-import { FixContainer } from '../components/bulmaComponents/FixContainer';
-import { getLocationPromise, getReportPromise } from '../services/utils';
+import MainUsCase from '@components/pages-comp/usdomestic/mainUsCase';
+import StatisticDomesticCardDisplay from '@components/statisticDisplay/StatisticDomesticCardDisplay';
+import StatisticDomesticLevelDisplay from '@components/statisticDisplay/StatisticDomesticLevelDisplay';
+import Loading from '@components/basic/Loading';
+import { StatisticTopGroup } from '@components/statisticDisplay/StatisticTopGroup';
+import { Container } from '@components/bulmaComponents/Container';
+import { FixContainer } from '@components/bulmaComponents/FixContainer';
+import { getLocationPromise, getReportPromise } from '@services/main';
+import { convertRegion, getState } from '@utils/main';
+import { containerVariants, mainVariants, stickyVariants } from '@variants/data';
 
 const TO_NAME = 1;
 const TO_ABBREVIATED = 2;
@@ -76,7 +77,7 @@ const Uscase = () => {
       .catch(console.error);
   }, []);
 
-  const getDomasticStatistic = () => {
+  const getDomesticStatistic = () => {
     return getReportPromise({
       iso: 'USA',
       region_name: 'US',
@@ -119,7 +120,7 @@ const Uscase = () => {
   };
 
   // react-query Queries
-  const domasticQuery = useQuery('domastic', getDomasticStatistic, {
+  const domesticQuery = useQuery('domestic', getDomesticStatistic, {
     onSuccess: (data = []) => {
       setStateList(data);
       if (data.length > 0) {
@@ -134,10 +135,10 @@ const Uscase = () => {
   });
 
   // react-query Mutations
-  const [refreshDomastic] = useMutation(getDomasticStatistic, {
+  const [refreshDomestic] = useMutation(getDomesticStatistic, {
     onSuccess: () => {
       // Query Invalidations
-      queryCache.invalidateQueries('domastic');
+      queryCache.invalidateQueries('domestic');
     },
   });
 
@@ -163,7 +164,7 @@ const Uscase = () => {
     }
   };
 
-  const handleMainDomasticCaseClick = (e) => {
+  const handleMainDomesticCaseClick = (e) => {
     if (stateList.length > 0) {
       if (e.data) {
         updateSelect(e.data);
@@ -186,88 +187,20 @@ const Uscase = () => {
     });
   };
 
-  const handleMainDomasticCaseHover = (e) => {
-    let myTooltip = document.createElement('div');
-    // myTooltip.id = 'myToolTip';
-    // myTooltip.innerHTML = '<h1>Hello, world</h1>';
-    // return myTooltip;
+  const handleMainDomesticCaseHover = (e) => {
     return null;
   };
 
   const handleRefreshButtonClick = () => {
-    refreshDomastic();
-  };
-
-  // framer motion
-  const mainVariants = {
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: 'beforeChildren',
-        staggerChildren: 0.1,
-      },
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        staggerChildren: 0.1,
-        // ease: 'easeInOut',
-        // duration: 0.7,
-      },
-    },
-  };
-
-  const setContainerVariants = (index: number) => ({
-    hidden: {
-      opacity: 0,
-      x: '100vw',
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: 'spring',
-        mass: 0.4,
-        damping: 8,
-        delay: 0.2 * index,
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: 10,
-      transition: {
-        ease: 'easeInOut',
-      },
-    },
-  });
-
-  const stickyVariants = {
-    hidden: {
-      y: '-50vh',
-    },
-    visible: {
-      y: 0,
-      transition: {
-        type: 'tween',
-      },
-    },
-    exit: {
-      y: '-50vh',
-      transition: {
-        ease: 'easeInOut',
-      },
-    },
+    refreshDomestic();
   };
 
   const [selectCityName, setSelectCityName] = useState('-1');
 
   return (
     <motion.main variants={mainVariants} initial="hidden" animate="visible" exit="exit">
-      {domasticQuery.isFetching && <Loading />}
-      <Container variants={setContainerVariants(1)} isVisible={stateList.length > 0}>
+      {domesticQuery.isFetching && <Loading />}
+      <Container variants={containerVariants(1)} isVisible={stateList.length > 0}>
         <StatisticTopGroup
           data={stateList
             .sort((a, b) => b.value - a.value)
@@ -285,7 +218,7 @@ const Uscase = () => {
       </Container>
 
       <Container
-        variants={setContainerVariants(2)}
+        variants={containerVariants(2)}
         animatekey={`top-data-${selectState.state.name}`}
         isVisible={selectState.cities.length > 0}
       >
@@ -308,7 +241,7 @@ const Uscase = () => {
       <section id="sticky-container">
         <Container
           animatekey={`level-data-${selectState.state.name}`}
-          variants={setContainerVariants(3)}
+          variants={containerVariants(3)}
           isVisible={typeof selectState.state.name === 'string' && stateList.length > 0}
         >
           <div
@@ -318,25 +251,25 @@ const Uscase = () => {
               console.log(offsetTop);
             }}
           >
-            <StatisticDomasticLevelDisplay selectState={selectState} />
+            <StatisticDomesticLevelDisplay selectState={selectState} />
           </div>
         </Container>
         <FixContainer z={10} variants={stickyVariants} isVisible={sticky && stateList.length > 0}>
-          <StatisticDomasticCardDisplay selectState={selectState} />
+          <StatisticDomesticCardDisplay selectState={selectState} />
         </FixContainer>
 
-        <FixContainer z={11} variants={stickyVariants} isVisible={sticky && domasticQuery.isFetching}>
+        <FixContainer z={11} variants={stickyVariants} isVisible={sticky && domesticQuery.isFetching}>
           <Loading />
         </FixContainer>
       </section>
-      <Container variants={setContainerVariants(4)} isVisible={stateList.length > 0}>
-        <MainUsCase data={stateList} onHover={handleMainDomasticCaseHover} onClick={handleMainDomasticCaseClick} />
+      <Container variants={containerVariants(4)} isVisible={stateList.length > 0}>
+        <MainUsCase data={stateList} onHover={handleMainDomesticCaseHover} onClick={handleMainDomesticCaseClick} />
       </Container>
     </motion.main>
   );
 };
 
-Uscase.getInitialProps = ({}) => {
+Uscase.getInitialProps = () => {
   return {};
 };
 

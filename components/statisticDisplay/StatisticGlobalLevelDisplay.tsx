@@ -1,9 +1,7 @@
 import React from 'react';
-import { Container } from '../bulmaComponents/Container';
+import * as d3 from 'd3-format';
 import { LevelItem } from '../bulmaComponents/Level/LevelItem';
 import { Level } from '../bulmaComponents/Level/Level';
-
-const d3 = require('d3-format');
 
 interface StatisticGlobalLevelDisplayProps {
   selectCountry: {

@@ -40,7 +40,7 @@ export const StatisticGlobalCardDisplay: React.FC<StatisticGlobalCardDisplayProp
   return (
     <StickyDisplayCard
       areaHeading={selectCountry.country['name']}
-      areaImgSrc={`https://www.countryflags.io/${selectCountry.country['code-2']}/shiny/64.png`}
+      areaImgSrc={`//www.countryflags.io/${selectCountry.country['code-2']}/flat/64.png`}
       updateTimeInfo={selectCountry.timediff}
       key={selectCountry.country['name']}
       variants={setCardItemVariants(0)}
