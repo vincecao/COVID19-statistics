@@ -71,10 +71,6 @@ export default function Home(): ReactElement {
     if (guessIPlocate) setSelected(guessIPlocate.alpha3code);
   }, [guessIPlocate]);
 
-  useEffect(() => {
-    console.log({ selected, reports, statistics, guessIPlocate, provinces });
-  }, [selected, reports, statistics, guessIPlocate, provinces]);
-
   const statisticsMatched = useMemo(() => statistics?.response.find((re) => re.alpha3code === selected), [statistics, selected]);
   const lastUpdate = useMemo(() => (reports?.find((re) => re.region.alpha3code === selected) || {}).last_update, [reports, selected]);
 

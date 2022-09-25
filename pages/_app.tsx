@@ -1,29 +1,29 @@
-import "bulma/css/bulma.css";
-import "../styles/index.css";
+import 'bulma/css/bulma.css';
+import '../styles/index.css';
 
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import classNames from "classnames";
-import { AnimatePresence,motion } from "framer-motion";
-import App from "next/app";
-import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import classNames from 'classnames';
+import { AnimatePresence, motion } from 'framer-motion';
+import App from 'next/app';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
-import Button from "../components/Button";
+import Button from '../components/Button';
 
 export function HtmlHeader() {
   return (
     <Head>
-      <title>COVID19 | Statistics</title>
       <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+      <title>COVID19 | Statistics</title>
     </Head>
   );
 }
 
 const HEADER_ITEM_VARIANTS = (index: number) => ({
-  hidden: { scale: 0.5, x: "-100vw" },
-  visible: { scale: 1, x: 0, transition: { type: "spring", mass: 0.4, damping: 10, delay: 0.05 * index } },
+  hidden: { scale: 0.5, x: '-100vw' },
+  visible: { scale: 1, x: 0, transition: { type: 'spring', mass: 0.4, damping: 10, delay: 0.05 * index } },
 });
 
 export function Navigation() {
@@ -35,21 +35,38 @@ export function Navigation() {
       <div className="navbar-brand">
         <Link href="/">
           <a className="navbar-item has-background-black">
-            <motion.img variants={HEADER_ITEM_VARIANTS(0)} initial="hidden" animate="visible" src="//avatars1.githubusercontent.com/u/17363908?s=460&u=1d1a597b0eae2c71ff30cc852056bd869a0450f6&v=4" height="20" />
+            <motion.img
+              variants={HEADER_ITEM_VARIANTS(0)}
+              initial="hidden"
+              animate="visible"
+              src="//avatars1.githubusercontent.com/u/17363908?s=460&u=1d1a597b0eae2c71ff30cc852056bd869a0450f6&v=4"
+              height="20"
+            />
           </a>
         </Link>
 
-        <a role="button" className={classNames("navbar-burger burger", { "is-active": isDropDownOpen })} aria-label="menu" aria-expanded="false" onClick={() => setIsDropDownOpen(!isDropDownOpen)}>
+        <a
+          role="button"
+          className={classNames('navbar-burger burger', { 'is-active': isDropDownOpen })}
+          aria-label="menu"
+          aria-expanded="false"
+          onClick={() => setIsDropDownOpen(!isDropDownOpen)}
+        >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div className={classNames("navbar-menu", { "is-active": isDropDownOpen })}>
+      <div className={classNames('navbar-menu', { 'is-active': isDropDownOpen })}>
         <div className="navbar-start">
           <Link href="/">
-            <motion.a variants={HEADER_ITEM_VARIANTS(0)} initial="hidden" animate="visible" className={classNames("navbar-item", { "is-active": pathname === "/" })}>
+            <motion.a
+              variants={HEADER_ITEM_VARIANTS(0)}
+              initial="hidden"
+              animate="visible"
+              className={classNames('navbar-item', { 'is-active': pathname === '/' })}
+            >
               Global
             </motion.a>
           </Link>
@@ -58,7 +75,12 @@ export function Navigation() {
         <div className="navbar-end">
           <div className="navbar-item">
             <motion.div variants={HEADER_ITEM_VARIANTS(1)} initial="hidden" animate="visible" className="buttons">
-              <Button type="anchor" href="//www.who.int/emergencies/diseases/novel-coronavirus-2019" text="COVID-19" color="dark" />
+              <Button
+                type="anchor"
+                href="//www.who.int/emergencies/diseases/novel-coronavirus-2019"
+                text="WHO COVID-19"
+                color="dark"
+              />
             </motion.div>
           </div>
           <div className="navbar-item has-background-black">
@@ -91,20 +113,25 @@ function Header() {
 }
 
 const FOOTER_VARIANTS = {
-  hidden: { scale: 0.5, y: "100vw" },
-  visible: { scale: 1, y: 0, transition: { type: "spring", mass: 0.4, damping: 10 } },
+  hidden: { scale: 0.5, y: '100vw' },
+  visible: { scale: 1, y: 0, transition: { type: 'spring', mass: 0.4, damping: 10 } },
 };
 
 function Footer() {
   return (
-    <motion.footer variants={FOOTER_VARIANTS} initial="hidden" animate="visible" className="footer has-background-black">
+    <motion.footer
+      variants={FOOTER_VARIANTS}
+      initial="hidden"
+      animate="visible"
+      className="footer has-background-black"
+    >
       <div className="content has-text-centered has-text-white">
         <p>
-          Made by{" "}
+          Made by{' '}
           <a className="has-text-warning" href="//vince-amazing.com" target="_blank" rel="noreferrer">
             <i>vincec</i>
           </a>
-          . The source code is licensed{" "}
+          . The source code is licensed{' '}
           <a className="has-text-warning" href="//opensource.org/licenses/mit-license.php">
             MIT
           </a>

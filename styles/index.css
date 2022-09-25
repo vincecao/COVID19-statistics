@@ -1,6 +1,7 @@
 body, html {
   background: black;
   min-height: 100vh;
+  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
 }
 
 ::-webkit-scrollbar {
