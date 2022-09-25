@@ -1,4 +1,4 @@
-import { ResponsiveStream } from "@nivo/stream";
+import { ResponsiveStream, StreamDatum } from "@nivo/stream";
 import * as d3 from "d3-format";
 import type { ReactElement } from "react";
 import React from "react";
@@ -10,8 +10,8 @@ const Container = styled.div`
 `;
 
 type StreamGraphProps = {
-  data: unknown[]
-  keys: unknown[]
+  data: StreamDatum[]
+  keys: string[]
   bottomLegend?: string
   leftLegend?: string
 }
