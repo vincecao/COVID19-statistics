@@ -1,6 +1,6 @@
 # COVID-19-statistics
 
-Visualizing real-time COVID data global data with [nivo](https://nivo.rocks/), [nextjs](https://nextjs.org/), typescript and [bulma](https://bulma.io/). Check more in [COVID-19-statistics](//covid-19-statistics.vercel.app/).
+Visualizing real-time COVID global data with [nivo](https://nivo.rocks/), [nextjs](https://nextjs.org/), typescript, [bulma](https://bulma.io/) and [framer-motion](https://github.com/framer/motion). Check more in [COVID-19-statistics](//covid-19-statistics.vercel.app/).
 
 
 ![covid-19-statistics](https://user-images.githubusercontent.com/17363908/192123487-dc2a2e94-b3ad-467c-bf10-95c931fd9228.png)
