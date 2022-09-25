@@ -1,45 +1,44 @@
-# COVID19-statistics
+# COVID-19-statistics
 
-[covid-19-statistics](//covid-19-statistics.vercel.app/)
+Visualizing real-time COVID data global data with [nivo](https://nivo.rocks/), [nextjs](https://nextjs.org/), typescript and [bulma](https://bulma.io/). Check more in [COVID-19-statistics](//covid-19-statistics.vercel.app/).
 
-#### Desktop
 
-![](./screenshots/graphs.png)
-![](./screenshots/caseRank.png)
+![covid-19-statistics](https://user-images.githubusercontent.com/17363908/192123487-dc2a2e94-b3ad-467c-bf10-95c931fd9228.png)
 
-#### Mobile
+![Screen Shot 2022-09-24 at 5 49 04 PM](https://user-images.githubusercontent.com/17363908/192123646-fed73006-69d9-421b-b798-c792f7feefcb.png)
 
-![](./screenshots/mobile.jpg)
 
-## Stack:
 
-- [next.js](//nextjs.org/)
-- Typescript
-- [react-query](//react-query.tanstack.com/)
-- [framer-motion](//www.framer.com/motion/)
-- [bulma](//bulma.io/)
-- [nivo](//nivo.rocks/)
-- [rapidapi](//rapidapi.com/)
-- [vercel](//vercel.com)
+## Environment
 
-## Deploy
+`.env` file is needed in order to call API correctly. API_KEY could be found from [RapidAPI](https://rapidapi.com/hub)
+``` env
+API_KEY=<API_KEY>
+COVID_API_HOST=covid-19-data.p.rapidapi.com
+COVID_API_HOST2=covid-193.p.rapidapi.com
+COVID_API_HOST3=covid-19-statistics.p.rapidapi.com
 
-```js
-/* Config env, add .env file with following three environment
- - API_KEY
- - COVID_API_HOST: covid-19-data.p.rapidapi.com
- - COVID_API_HOST2: covid-193.p.rapidapi.com
- - COVID_API_HOST3: covid-19-statistics.p.rapidapi.com
-*/
-
-yarn install
-
-// Replace your certificates key and cert under /certificates folder for local https testing, recommand using mkcert
-
-yarn dev
 ```
 
-## Features
+## Developement
+```bash
+# Install dependencies
+pnpm i
 
-- Always syncing with latest covid19 statistic with countries and its provinces
-- Global and US domestic wide
+# Add your pem files into `/certificates` folder, so your localhost can be hosted as HTTPS connection. 
+# Recommand to use opensource mkcert library from github
+# - certificates
+#   - local.com+5-key.pem
+#   - local.com+5.pem
+
+# Start development mode
+pnpm dev
+
+# Build
+pnpm build
+
+# Lint and lint:fix
+pnpm lint
+pnpm lint:fix
+```
+
