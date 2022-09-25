@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 import React from "react";
 import styled from "styled-components";
 
-import WORLD_COUNTRIES from "../data/WORLD_COUNTRIES.json";
+import { WORLD_COUNTRIES } from "../data/constants";
 
 const Container = styled.div`
   width: 100%;
