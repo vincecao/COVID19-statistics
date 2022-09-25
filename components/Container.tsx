@@ -1,6 +1,6 @@
-import React, { ReactNode, ReactElement } from "react";
+import { AnimatePresence, motion, Variants } from "framer-motion";
+import React, { ReactElement,ReactNode } from "react";
 import styled from "styled-components";
-import { motion, AnimatePresence, Variants } from "framer-motion";
 
 type ContainerProps = {
   children: ReactNode;

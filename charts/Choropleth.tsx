@@ -1,9 +1,9 @@
-import { ReactElement, useState } from "react";
+import { ChoroplethEventHandler, ResponsiveChoropleth } from "@nivo/geo";
+import { ReactElement } from "react";
 import React from "react";
-import { ResponsiveChoropleth } from "@nivo/geo";
 import styled from "styled-components";
 
-import * as WORLD_COUNTRIES from "../data/WORLD_COUNTRIES.json";
+import WORLD_COUNTRIES from "../data/WORLD_COUNTRIES.json";
 
 const Container = styled.div`
   width: 100%;
@@ -14,7 +14,7 @@ const Container = styled.div`
 type ChoroplethProps = {
   data: { id: string; value: number }[];
   rotation: number;
-  onClick?: (props: any) => void;
+  onClick?: ChoroplethEventHandler;
 };
 
 export default function Choropleth({ data, rotation, onClick }: ChoroplethProps): ReactElement {

@@ -1,8 +1,9 @@
-import { UseFetch, useFetch, UseFetchOptions, usePromiseState } from "@vincecao/use-tools";
+import { usePromiseState } from "@vincecao/use-tools";
 import iso_countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { $fetch } from "ohmyfetch";
+import { useCallback } from "react";
+
 import { API_KEY } from "../data/constants";
 import { Report } from "../types";
 

@@ -1,8 +1,9 @@
-import type { ReactElement, Ref } from "react";
-import { forwardRef } from "react";
-import classNames from "classnames";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classNames from "classnames";
+import type { ReactElement, Ref } from "react";
+import { forwardRef } from "react";
+
 import ButtonExt from "./ButtonExt";
 
 type ButtonProps = {

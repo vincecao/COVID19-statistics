@@ -1,6 +1,6 @@
+import { ResponsivePie } from "@nivo/pie";
 import type { ReactElement } from "react";
 import React from "react";
-import { ResponsivePie } from "@nivo/pie";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -8,7 +8,11 @@ const Container = styled.div`
   height: 400px;
 `;
 
-export default function PieGraph({ data }): ReactElement {
+type PieGraphProps = {
+  data: {id: string, value: number}[]
+}
+
+export default function PieGraph({ data }: PieGraphProps): ReactElement {
   return (
     <Container>
       <ResponsivePie

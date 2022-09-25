@@ -1,7 +1,7 @@
+import { ResponsiveStream } from "@nivo/stream";
+import * as d3 from "d3-format";
 import type { ReactElement } from "react";
 import React from "react";
-import * as d3 from "d3-format";
-import { ResponsiveStream } from "@nivo/stream";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -10,8 +10,8 @@ const Container = styled.div`
 `;
 
 type StreamGraphProps = {
-  data: any[]
-  keys: any[]
+  data: unknown[]
+  keys: unknown[]
   bottomLegend?: string
   leftLegend?: string
 }

@@ -1,10 +1,10 @@
-import { useFetch, UseFetchOptions } from "@vincecao/use-tools";
+import { format, subMonths } from "date-fns";
 import iso_countries from "i18n-iso-countries";
+import en from "i18n-iso-countries/langs/en.json";
 import { useEffect, useMemo, useState } from "react";
+
 import { Report, ReportNumberField } from "../types";
 import { fetchReport } from "./useReport";
-import { format, subMonths } from "date-fns";
-import en from "i18n-iso-countries/langs/en.json";
 
 iso_countries.registerLocale(en);
 
@@ -52,7 +52,7 @@ export default function useProvince(selected: string, type: keyof ReportNumberFi
     });
 
     Promise.all(promiseChain).then(setProvinces);
-  }, [selected]);
+  }, [selected, type]);
 
   const normalizedProvinces = useMemo(() => (provinces.filter((p) => Object.keys(p).length !== 0).reverse()), [provinces])
   const keys = useMemo(() => (Object.keys(normalizedProvinces?.[0] || {})), [normalizedProvinces])

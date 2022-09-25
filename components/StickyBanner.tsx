@@ -1,9 +1,10 @@
+import * as d3 from "d3-format";
+import { format } from "date-fns";
+import { motion, Variants } from "framer-motion";
 import type { ReactElement } from "react";
 import React from "react";
-import * as d3 from "d3-format";
-import { motion } from "framer-motion";
 import styled from "styled-components";
-import { format } from "date-fns";
+
 import { StatisticsResponse } from "../types";
 
 const AreaImage = styled(motion.img)`
@@ -16,7 +17,13 @@ const STICKY_BANNER_VARIANTS = (index: number) => ({
   visible: { y: 0, transition: { type: "spring", mass: 0.4, damping: 10, delay: 0.05 * index } },
 });
 
-function Item({ content, heading, variants }) {
+type ItemProps = {
+  content?: string
+  heading?: string
+  variants?: Variants
+}
+
+function Item({ content, heading, variants }: ItemProps) {
   return (
     <motion.div className="control" variants={variants} initial="hidden" animate="visible">
       <div className="tags has-addons">

@@ -1,9 +1,10 @@
-import React, { ReactElement, useState } from "react";
+import classNames from "classnames";
 import * as d3 from "d3-format";
 import * as d3Chromatic from "d3-scale-chromatic";
 import { motion } from "framer-motion";
+import React, { ReactElement, useState } from "react";
+
 import { StatisticsResponse } from "../types";
-import classNames from "classnames";
 
 interface TopCountriesProps {
   title: string;
@@ -80,4 +81,4 @@ export default function TopCountries ({ title, data, defaultTopNumber, colorPatt
       </div>
     </div>
   );
-};
+}

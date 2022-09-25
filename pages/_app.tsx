@@ -1,15 +1,16 @@
+import "bulma/css/bulma.css";
+import "../styles/index.css";
+
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import classNames from "classnames";
+import { AnimatePresence,motion } from "framer-motion";
 import App from "next/app";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import classNames from "classnames";
-import "bulma/css/bulma.css";
-import "../styles/index.css";
 
 import Button from "../components/Button";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 export function HtmlHeader() {
   return (

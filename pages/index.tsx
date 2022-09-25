@@ -1,26 +1,28 @@
-import { memo, ReactElement, useEffect, useMemo, useState } from "react";
-import React from "react";
-import * as d3 from "d3-format";
-import { motion } from "framer-motion";
-import { Level, Item } from "../components/Level";
-import { format, subDays } from "date-fns";
-import useReport from "../hooks/useReport";
-import useStatistic from "../hooks/useStatistic";
-import useIPLocate from "../hooks/useIPLocate";
-import Container, { FixedContainer } from "../components/Container";
-import { useStickyRef } from "@vincecao/use-tools";
-import TreeMap from "../charts/TreeMap";
-import StreamGraph from "../charts/StreamGraph";
-import PieGraph from "../charts/PieGraph";
-import useProvince from "../hooks/useProvinces";
-import TopCountries from "../charts/TopCountries";
-import Choropleth from "../charts/Choropleth";
-import iso_countries from "i18n-iso-countries";
-import StickyBanner from "../components/StickyBanner";
-
 import "bulma/css/bulma.css";
 
-iso_countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
+import { useStickyRef } from "@vincecao/use-tools";
+import * as d3 from "d3-format";
+import { format, subDays } from "date-fns";
+import { motion } from "framer-motion";
+import iso_countries from "i18n-iso-countries";
+import en from "i18n-iso-countries/langs/en.json"
+import { memo, ReactElement, useEffect, useMemo, useState } from "react";
+import React from "react";
+
+import Choropleth from "../charts/Choropleth";
+import PieGraph from "../charts/PieGraph";
+import StreamGraph from "../charts/StreamGraph";
+import TopCountries from "../charts/TopCountries";
+import TreeMap from "../charts/TreeMap";
+import Container, { FixedContainer } from "../components/Container";
+import { Item,Level } from "../components/Level";
+import StickyBanner from "../components/StickyBanner";
+import useIPLocate from "../hooks/useIPLocate";
+import useProvince from "../hooks/useProvinces";
+import useReport from "../hooks/useReport";
+import useStatistic from "../hooks/useStatistic";
+
+iso_countries.registerLocale(en);
 
 const MAIN_VARIANTS = {
   hidden: { opacity: 0 },

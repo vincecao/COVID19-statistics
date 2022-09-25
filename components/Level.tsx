@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
 import { motion } from "framer-motion";
+import type { ReactElement, ReactNode } from "react";
 
 type LevelProps = {
   children: ReactNode;
